@@ -1,0 +1,27 @@
+= JDynINWX
+:toc: macro
+
+toc::[]
+
+Update your INWX nameserver entries via cron to use them as dyndns replacement.
+
+
+== Compile and install
+
+You will need Java 17 installed.
+If you do not have it, get it from sdkman.io.
+
+.Init project
+[source,bash]
+----
+./mvnw verify
+cp app/target/*unojar*.jar $HOME/.local/apps/
+# execute
+java -jar $HOME/.local/apps/
+----
+
+… or just get the jar from the GitHub releases.
+
+== Configuration
+
+Edit `$XDG_CONFIG_DIR/jdyninwx/application.toml`.
