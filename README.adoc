@@ -3,7 +3,7 @@
 
 toc::[]
 
-Update your INWX nameserver entries via cron to use them as dyndns replacement.
+Update your INWX nameserver entries via cron to use them as dyndns replacement with (almost) zero dependencies.
 
 
 == Compile and install
@@ -24,4 +24,4 @@ java -jar $HOME/.local/apps/
 
 == Configuration
 
-Edit `$XDG_CONFIG_DIR/jdyninwx/application.toml`.
+Edit `$XDG_CONFIG_DIR/jdyninwx/application.properties`.
