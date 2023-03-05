@@ -1,11 +1,12 @@
 = JDynINWX
 :toc: macro
 
-toc::[]
+
+image:https://img.shields.io/github/license/apache/maven.svg?label=License["Apache License, Version 2.0, January 2004",link=https://www.apache.org/licenses/LICENSE-2.0]
 
 Update your INWX nameserver entries via cron to use them as dyndns replacement with (almost) zero dependencies.
 
-image:https://img.shields.io/github/license/apache/maven.svg?label=License["Apache License, Version 2.0, January 2004",link=https://www.apache.org/licenses/LICENSE-2.0]
+toc::[]
 
 '''
 
