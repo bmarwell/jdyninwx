@@ -15,16 +15,17 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 record Result<T>(T success, Throwable error) {
 
     Result {
-        if (success() != null && error() != null) {
-            throw new IllegalStateException("Cannot set both success and error!");
+        if (success != null && error != null) {
+            throw new IllegalArgumentException("Cannot set both success and error!");
         }
-        if (success() == null && error() == null) {
-            throw new IllegalStateException("Cannot set none of success and error!");
+        if (success == null && error == null) {
+            throw new IllegalArgumentException("Cannot set none of success and error!");
         }
     }
 
@@ -45,11 +46,11 @@ record Result<T>(T success, Throwable error) {
     }
 
     static <T> Result<T> ok(T success) {
-        return new Result<>(success);
+        return new Result<>(Objects.requireNonNull(success));
     }
 
     static <T> Result<T> fail(Throwable error) {
-        return new Result<>(error);
+        return new Result<>(Objects.requireNonNull(error));
     }
 
     public Stream<T> stream() {
