@@ -51,3 +51,8 @@ jobs:
             verify \
             -Pdocs \
             -DtrimStackTrace=false
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
+
