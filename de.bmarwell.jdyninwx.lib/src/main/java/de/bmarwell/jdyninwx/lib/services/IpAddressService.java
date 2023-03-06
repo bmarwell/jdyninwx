@@ -40,7 +40,7 @@ public interface IpAddressService extends Serializable {
 
     Result<Inet6Address> getInet6Address(URI ipv4resolver);
 
-    IpAddressService withRequestTimeout(Duration timeout);
+    <T extends IpAddressService> T withRequestTimeout(Duration timeout);
 
-    IpAddressService withConnectTimeout(Duration timeout);
+    <T extends IpAddressService> T withConnectTimeout(Duration timeout);
 }
