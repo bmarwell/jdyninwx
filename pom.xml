@@ -36,6 +36,13 @@
 
     <!-- 3rd party plugins -->
     <plugin.spotless.version>2.34.0</plugin.spotless.version>
+
+    <!-- logging dependencies -->
+    <dependency.slf4j.version>2.0.6</dependency.slf4j.version>
+
+    <!-- test dependencies -->
+    <dependency.junit5.version>5.9.2</dependency.junit5.version>
+    <dependency.assertj.version>3.24.2</dependency.assertj.version>
   </properties>
 
   <modules>
@@ -50,6 +57,63 @@
       <name>Benjamin Marwell</name>
     </developer>
   </developers>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${dependency.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- 3rd party dependencies -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>5.2.1</version>
+      </dependency>
+
+      <!-- test dependencies -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${dependency.junit5.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${dependency.junit5.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${dependency.assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>
@@ -79,11 +143,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M9</version>
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M9</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>

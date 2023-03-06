@@ -17,6 +17,7 @@ package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -39,7 +40,10 @@ public class JavaHttpClientIpAddressService implements IpAddressService {
     }
 
     public HttpClient createHttpClient() {
-        return HttpClient.newBuilder().connectTimeout(connectTimeout).build();
+        return HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(connectTimeout)
+                .build();
     }
 
     @Override
@@ -64,6 +68,11 @@ public class JavaHttpClientIpAddressService implements IpAddressService {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Result<Inet6Address> getInet6Address(URI ipv6resolver) {
+        throw new UnsupportedOperationException("not implemented.");
     }
 
     @Override

@@ -17,5 +17,17 @@
 
   <description>Library functions to retrieve your IPv4/IPv6 address and to update INWX nameserver RRs.</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

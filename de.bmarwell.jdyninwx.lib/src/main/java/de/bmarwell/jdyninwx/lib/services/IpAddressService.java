@@ -17,6 +17,7 @@ package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.Serializable;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
@@ -36,6 +37,8 @@ public interface IpAddressService extends Serializable {
     }
 
     Result<Inet4Address> getInet4Address(URI ipv4resolver);
+
+    Result<Inet6Address> getInet6Address(URI ipv4resolver);
 
     IpAddressService withRequestTimeout(Duration timeout);
 
