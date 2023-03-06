@@ -16,8 +16,13 @@
 package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.ConnectionConfig;
@@ -26,7 +31,6 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.core5.util.Timeout;
 
 public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpClientIpAddressService
         implements IpAddressService {
@@ -46,8 +50,8 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
     private HttpClientConnectionManager createConnectionManager(IpFamily ipFamily) {
         final DnsResolver dnsResolver = new DnsResolver(ipFamily);
         final ConnectionConfig connConfig = ConnectionConfig.custom()
-                .setConnectTimeout(Timeout.of(getConnectTimeout()))
-                .setSocketTimeout(Timeout.of(getRequestTimeout()))
+                .setConnectTimeout(getConnectTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                .setSocketTimeout(Math.toIntExact(getRequestTimeout().toMillis()), TimeUnit.MILLISECONDS)
                 .build();
 
         return PoolingHttpClientConnectionManagerBuilder.create()
