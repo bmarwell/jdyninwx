@@ -99,6 +99,12 @@
         <version>${dependency.assertj.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock</artifactId>
+        <version>3.0.0-beta-3</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -144,6 +150,14 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.0.0-M9</version>
+          <configuration>
+            <systemProperties>
+              <property>
+                <name>java.util.logging.config.file</name>
+                <value>src/test/resources/logging.properties</value>
+              </property>
+            </systemProperties>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>

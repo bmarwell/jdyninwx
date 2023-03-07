@@ -15,23 +15,32 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import java.io.Serial;
 import java.time.Duration;
 
+/**
+ * Default base implementation for {@code with*()}-methods.
+ */
 abstract class AbstractConfigurableHttpClientIpAddressService implements IpAddressService {
+
+    @Serial
+    private static final long serialVersionUID = -3790874923289555729L;
 
     private Duration requestTimeout = Duration.ofMillis(1500L);
     private Duration connectTimeout = Duration.ofMillis(500L);
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IpAddressService withRequestTimeout(Duration timeout) {
+    public <T extends IpAddressService> T withRequestTimeout(Duration timeout) {
         this.requestTimeout = timeout;
-        return this;
+        return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IpAddressService withConnectTimeout(Duration timeout) {
+    public <T extends IpAddressService> T withConnectTimeout(Duration timeout) {
         this.connectTimeout = timeout;
-        return this;
+        return (T) this;
     }
 
     public Duration getRequestTimeout() {

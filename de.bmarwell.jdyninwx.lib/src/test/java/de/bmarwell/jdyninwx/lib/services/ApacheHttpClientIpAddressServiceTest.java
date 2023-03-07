@@ -15,17 +15,27 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 class ApacheHttpClientIpAddressServiceTest {
 
@@ -33,12 +43,14 @@ class ApacheHttpClientIpAddressServiceTest {
 
     private static boolean SUPPORTS_IPV6 = false;
 
-    private static final URI IDENT_ME = URI.create("https://ident.me");
+    @RegisterExtension
+    public static final WireMockExtension wiremock = WireMockExtension.newInstance()
+            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
+            .build();
 
-    private final ApacheHttpClientIpAddressService service =
-            (ApacheHttpClientIpAddressService) new ApacheHttpClientIpAddressService()
-                    .withConnectTimeout(Duration.ofMillis(1500L))
-                    .withRequestTimeout(Duration.ofMillis(1500L));
+    private final IpAddressService service = new ApacheHttpClientIpAddressService()
+            .withConnectTimeout(Duration.ofMillis(1500L))
+            .withRequestTimeout(Duration.ofMillis(1500L));
 
     @BeforeAll
     static void setUpIpSupport() throws UnknownHostException {
@@ -58,13 +70,25 @@ class ApacheHttpClientIpAddressServiceTest {
         }
     }
 
+    @BeforeEach
+    void setUpWireMock() {
+        wiremock.stubFor(get("/").willReturn(
+                        aResponse().withBody("{{request.clientIp}}").withTransformers("response-template")));
+    }
+
+    @AfterEach
+    void printFailedRequests() {
+        wiremock.findUnmatchedRequests().getRequests().forEach(System.out::println);
+    }
+
     @Test
     void getInet4HostIp() throws UnknownHostException {
         ApacheHttpClientIpAddressService.DnsResolver service =
                 new ApacheHttpClientIpAddressService.DnsResolver(ApacheHttpClientIpAddressService.IpFamily.IPV4);
 
         // when
-        InetAddress[] inet4Addresses = service.resolve(IDENT_ME.getHost());
+        InetAddress[] inet4Addresses =
+                service.resolve(URI.create(wiremock.baseUrl()).getHost());
 
         // then
         assertThat(inet4Addresses).isNotNull().allMatch(Inet4Address.class::isInstance, "must be IPv4 address");
@@ -73,8 +97,9 @@ class ApacheHttpClientIpAddressServiceTest {
     @Test
     @EnabledIf("supportsIpv4")
     void resolveInet4Address() {
+
         // when
-        Result<Inet4Address> inet4Address = service.getInet4Address(IDENT_ME);
+        Result<Inet4Address> inet4Address = service.getInet4Address(URI.create(wiremock.baseUrl()));
 
         // then
         assertThat(inet4Address).isNotNull().extracting(Result::success).isInstanceOf(Inet4Address.class);
@@ -86,7 +111,8 @@ class ApacheHttpClientIpAddressServiceTest {
                 new ApacheHttpClientIpAddressService.DnsResolver(ApacheHttpClientIpAddressService.IpFamily.IPV6);
 
         // when
-        InetAddress[] inet4Addresses = service.resolve(IDENT_ME.getHost());
+        InetAddress[] inet4Addresses =
+                service.resolve(URI.create(wiremock.baseUrl()).getHost());
 
         // then
         assertThat(inet4Addresses).isNotNull().allMatch(Inet6Address.class::isInstance, "must be IPv6 address");
@@ -96,10 +122,21 @@ class ApacheHttpClientIpAddressServiceTest {
     @EnabledIf("supportsIpv6")
     void resolveInet6Address() {
         // when
-        Result<Inet6Address> inet6Address = service.getInet6Address(IDENT_ME);
+        Result<Inet6Address> inet6Address = service.getInet6Address(URI.create(wiremock.baseUrl()));
 
         // then
         assertThat(inet6Address).isNotNull().extracting(Result::success).isInstanceOf(Inet6Address.class);
+    }
+
+    @Test
+    @EnabledIf("supportsIpv4")
+    void resolveFirst() {
+        // when
+        Optional<Inet4Address> resolvedInet4Address =
+                service.getFirstResolvedInet4Address(singletonList(URI.create(wiremock.baseUrl())));
+
+        // then
+        assertThat(resolvedInet4Address).isPresent().get().isInstanceOf(Inet4Address.class);
     }
 
     boolean supportsIpv4() {
