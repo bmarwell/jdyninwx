@@ -26,7 +26,7 @@ import picocli.CommandLine.Spec;
  * Main InwxUpdater application entrypoint.
  */
 @Command(
-        name = "inwx-updater",
+        name = "jdynsinwx",
         subcommands = {InwxUpdateCommand.class, InwxStatusCommand.class, CommandLine.HelpCommand.class},
         description = "Updates inwx resource records or displays their current state.")
 public class InwxUpdater {

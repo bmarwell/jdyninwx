@@ -121,7 +121,7 @@
             </project>
             <assemble>
                <javaArchive>
-                <inwx-updater>
+                <jdynsinwx>
                   <active>ALWAYS</active>
                   <exported>true</exported>
                   <formats>
@@ -137,7 +137,7 @@
                       <pattern>${project.build.directory}/dependency/**/*.jar</pattern>
                     </jar>
                   </jars>
-                </inwx-updater>
+                </jdynsinwx>
               </javaArchive>
             </assemble>
           </jreleaser>
