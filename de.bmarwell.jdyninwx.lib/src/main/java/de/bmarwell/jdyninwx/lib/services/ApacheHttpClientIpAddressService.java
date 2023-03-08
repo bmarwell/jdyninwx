@@ -16,6 +16,7 @@
 package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -32,12 +33,25 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 
+/**
+ * Apache HttpClient-based IP Address Service.
+ */
 public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpClientIpAddressService
         implements IpAddressService {
+
+    @Serial
+    private static final long serialVersionUID = 3653973017046313858L;
 
     enum IpFamily {
         IPV4,
         IPV6
+    }
+
+    /**
+     * Constructs a default, immutable instance.
+     */
+    public ApacheHttpClientIpAddressService() {
+        // cdi etc
     }
 
     CloseableHttpClient createApacheHttpClient(IpFamily ipFamily) {
@@ -61,6 +75,7 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends InetAddress> Result<T> getResolverResponseForFamily(URI ipv4resolver, IpFamily ipFamily) {
         try (CloseableHttpClient client = createApacheHttpClient(ipFamily)) {
             HttpGet getIp4 = new HttpGet(ipv4resolver);

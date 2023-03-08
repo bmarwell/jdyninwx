@@ -34,6 +34,13 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
     @Serial
     private static final long serialVersionUID = -2062602651810812231L;
 
+    /**
+     * Default constructor for immutable class; can be modified using {@code with*()}-methods.
+     */
+    public ApacheHttpClientStaticInwxUpdateService() {
+        // cdi
+    }
+
     private static final String XML_POST_TEMPALTE =
             """
             <?xml version="1.0" encoding="UTF-8"?>
