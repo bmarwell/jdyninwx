@@ -18,9 +18,9 @@ package de.bmarwell.jdyninwx.lib.services;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-record Result<T>(T success, Throwable error) {
+public record Result<T>(T success, Throwable error) {
 
-    Result {
+    public Result {
         if (success != null && error != null) {
             throw new IllegalArgumentException("Cannot set both success and error!");
         }

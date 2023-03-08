@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bmarwell.jdyninwx</groupId>
+    <artifactId>jdyninwx-root</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>de.bmarwell.jdyninwx</groupId>
+  <artifactId>de.bmarwell.jdyninwx.app</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>JDynINWX :: app</name>
+
+  <description>App (command line interface) for the library to update your domain's RR entries.</description>
+
+  <properties>
+    <distribution.name>JDynInwx</distribution.name>
+    <jreleaser.stereotype>CLI</jreleaser.stereotype>
+    <project.java.mainClass>de.bmarwell.jdyninwx.app.InwxUpdater</project.java.mainClass>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bmarwell.jdyninwx</groupId>
+      <artifactId>de.bmarwell.jdyninwx.lib</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>info.picocli</groupId>
+              <artifactId>picocli-codegen</artifactId>
+              <version>${dependency.picocli-codegen.version}</version>
+            </path>
+          </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${project.java.mainClass}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-runtime-dependencies</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <excludeScope>test</excludeScope>
+              <includeScope>runtime</includeScope>
+              <prependGroupId>true</prependGroupId>
+              <useSubDirectoryPerScope>true</useSubDirectoryPerScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jreleaser</groupId>
+        <artifactId>jreleaser-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-assemble</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <jreleaser>
+            <project>
+              <name>inwx-updater</name>
+              <tags>
+                <tag>cli</tag>
+                <tag>inwx</tag>
+              </tags>
+              <stereotype>${jreleaser.stereotype}</stereotype>
+              <java>
+                <mainModule>jdyninwx.app</mainModule>
+                <mainClass>${project.java.mainClass}</mainClass>
+                <multiProject>true</multiProject>
+              </java>
+            </project>
+            <assemble>
+               <javaArchive>
+                <inwx-updater>
+                  <active>ALWAYS</active>
+                  <exported>true</exported>
+                  <formats>
+                    <format>ZIP</format>
+                    <!-- wait for https://github.com/jreleaser/jreleaser/issues/1247 -->
+                    <!--format>TAR_GZ</format-->
+                  </formats>
+                  <mainJar>
+                    <path>${project.build.directory}/${project.artifactId}-${project.version}.jar</path>
+                  </mainJar>
+                  <jars>
+                    <jar>
+                      <pattern>${project.build.directory}/dependency/**/*.jar</pattern>
+                    </jar>
+                  </jars>
+                </inwx-updater>
+              </javaArchive>
+            </assemble>
+          </jreleaser>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
