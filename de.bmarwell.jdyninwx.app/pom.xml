@@ -36,8 +36,17 @@
     </dependency>
 
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fusesource.jansi</groupId>
+      <artifactId>jansi</artifactId>
     </dependency>
   </dependencies>
 
@@ -137,6 +146,9 @@
                       <pattern>${project.build.directory}/dependency/**/*.jar</pattern>
                     </jar>
                   </jars>
+                  <java>
+                    <options>-Djava.net.useSystemProxies=true</options>
+                  </java>
                 </jdynsinwx>
               </javaArchive>
             </assemble>

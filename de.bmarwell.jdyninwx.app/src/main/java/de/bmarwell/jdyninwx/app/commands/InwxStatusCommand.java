@@ -15,8 +15,12 @@
  */
 package de.bmarwell.jdyninwx.app.commands;
 
+import de.bmarwell.jdyninwx.app.InwxUpdater;
 import java.util.concurrent.Callable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ParentCommand;
 
 /**
  * Retrieves and print the status of the specified domain resource records.
@@ -24,8 +28,14 @@ import picocli.CommandLine.Command;
 @Command(name = "status", description = "Retrieves and print the status of the specified domain resource records.")
 public class InwxStatusCommand implements Callable<Integer> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(InwxStatusCommand.class);
+
+    @ParentCommand
+    private InwxUpdater parent;
+
     @Override
     public Integer call() throws Exception {
+        LOG.info("called with: " + parent.getSettings());
         throw new UnsupportedOperationException("not implemented");
     }
 }

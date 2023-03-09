@@ -51,13 +51,14 @@
 
     <!-- logging dependencies -->
     <dependency.slf4j.version>2.0.6</dependency.slf4j.version>
+    <dependency.logback.version>1.4.5</dependency.logback.version>
 
     <!-- test dependencies -->
     <dependency.junit5.version>5.9.2</dependency.junit5.version>
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <dependency.picocli.version>4.7.1</dependency.picocli.version>
     <dependency.picocli-codegen.version>${dependency.picocli.version}</dependency.picocli-codegen.version>
-    <dependency.logback.version>1.4.5</dependency.logback.version>
+    <dependency.jansi.version>1.18</dependency.jansi.version>
   </properties>
 
   <modules>
@@ -86,18 +87,6 @@
         <version>${dependency.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
-
-      <!-- 3rd party dependencies -->
-      <dependency>
-        <groupId>org.apache.httpcomponents.client5</groupId>
-        <artifactId>httpclient5</artifactId>
-        <version>5.2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>info.picocli</groupId>
-        <artifactId>picocli</artifactId>
-        <version>${dependency.picocli.version}</version>
-      </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
@@ -124,6 +113,24 @@
             <artifactId>commons-compiler</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <!-- 3rd party dependencies -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>5.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli</artifactId>
+        <version>${dependency.picocli.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.fusesource.jansi</groupId>
+        <artifactId>jansi</artifactId>
+        <version>${dependency.jansi.version}</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- test dependencies -->
