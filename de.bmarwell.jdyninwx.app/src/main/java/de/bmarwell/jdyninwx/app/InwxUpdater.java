@@ -18,6 +18,7 @@ package de.bmarwell.jdyninwx.app;
 import de.bmarwell.jdyninwx.app.InwxUpdater.GlobalDefaultValueProvider;
 import de.bmarwell.jdyninwx.app.commands.InwxStatusCommand;
 import de.bmarwell.jdyninwx.app.commands.InwxUpdateCommand;
+import de.bmarwell.jdyninwx.app.commands.Ip;
 import de.bmarwell.jdyninwx.app.settings.InwxSettings;
 import de.bmarwell.jdyninwx.app.settings.PropertyParser;
 import java.io.IOException;
@@ -40,7 +41,7 @@ import picocli.CommandLine.Spec;
  */
 @Command(
         name = "jdynsinwx",
-        subcommands = {InwxUpdateCommand.class, InwxStatusCommand.class, CommandLine.HelpCommand.class},
+        subcommands = {InwxUpdateCommand.class, InwxStatusCommand.class, Ip.class, CommandLine.HelpCommand.class},
         description = "Updates inwx resource records or displays their current state.",
         defaultValueProvider = GlobalDefaultValueProvider.class)
 public class InwxUpdater {

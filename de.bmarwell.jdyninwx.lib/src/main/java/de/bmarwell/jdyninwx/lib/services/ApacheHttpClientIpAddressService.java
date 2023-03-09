@@ -82,8 +82,8 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
             String execute = client.execute(getIp4, new BasicHttpClientResponseHandler());
 
             return Result.ok((T) Inet4Address.getByName(execute));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | IllegalStateException e) {
+            return Result.fail(e);
         }
     }
 

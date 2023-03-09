@@ -179,11 +179,15 @@ public class PropertyParser {
                 constants.getInwxIpv6RecordConfigurations(),
                 constants.getIdentPoolIpv4(),
                 constants.getIdentPoolIpv6(),
-                Optional.empty(),
-                Optional.empty());
+                PropertyFileConstants.DEFAULT_IDENT_CONNECT_TIMEOUT,
+                constants.getIdentConnectTimeout());
     }
 
     static final class PropertyFileConstants {
+
+        static final Duration DEFAULT_IDENT_CONNECT_TIMEOUT = Duration.ofMillis(500L);
+        static final Duration DEFAULT_IDENT_REQUEST_TIMEOUT = Duration.ofMillis(1500L);
+
         static final String INWX_USER_NAME = "jdynsinwx.inwx.username";
         static final String INWX_PASSWORD = "jdynsinwx.inwx.password";
 
@@ -193,6 +197,7 @@ public class PropertyParser {
         static final String INWX_RECORDS_IPV6 = "jdynsinwx.inwx.record.ipv6";
         static final String IDENT_POOL_IPV4 = "jdynsinwx.ident.pool.ipv4";
         static final String IDENT_POOL_IPV6 = "jdynsinwx.ident.pool.ipv6";
+        static final String IDENT_REQUEST_TIMEOUT = "jdynsinwx.ident.connection.request.timeout";
 
         private final Map<String, Object> settings;
 
@@ -207,9 +212,7 @@ public class PropertyParser {
         char[] getInwxPassword() {
             String password = (String) settings.get(INWX_PASSWORD);
             if (password == null) {
-                LOG.error("Property [" + INWX_PASSWORD + "] not set in application.properties.");
-                throw new IllegalArgumentException(
-                        "Property [" + INWX_PASSWORD + "] not set in application.properties.");
+                return new char[] {};
             }
             return password.toCharArray();
         }
@@ -282,6 +285,23 @@ public class PropertyParser {
             }
 
             throw new UnsupportedOperationException("Cannot parse recordIds: " + identPoolEntries);
+        }
+
+        public Duration getIdentConnectTimeout() {
+            Object reqTimeout = settings.get(IDENT_REQUEST_TIMEOUT);
+            if (!(reqTimeout instanceof String)) {
+                return DEFAULT_IDENT_REQUEST_TIMEOUT;
+            }
+
+            try {
+                int durationMs = Integer.parseInt((String) reqTimeout, 10);
+                return Duration.ofMillis(durationMs);
+            } catch (NumberFormatException nfe) {
+                String message = "Invalid setting in application.properties for key [" + IDENT_REQUEST_TIMEOUT + "]: ["
+                        + reqTimeout + "].";
+                LOG.error(message);
+                throw new IllegalArgumentException(message, nfe);
+            }
         }
     }
 }

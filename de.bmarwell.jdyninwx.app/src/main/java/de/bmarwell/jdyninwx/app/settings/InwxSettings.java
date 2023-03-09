@@ -28,8 +28,8 @@ public record InwxSettings(
         List<RecordConfiguration> ipv6UpdateRecords,
         List<URI> identPoolIpv4,
         List<URI> identPoolIpv6,
-        Optional<Duration> identConnectTimeout,
-        Optional<Duration> identRequestTimeout) {
+        Duration identConnectTimeout,
+        Duration identRequestTimeout) {
 
     public record RecordConfiguration(int recordId, Duration ttl) {}
 }
