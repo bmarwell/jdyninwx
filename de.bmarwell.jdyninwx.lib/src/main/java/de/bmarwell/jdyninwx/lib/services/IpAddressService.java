@@ -36,6 +36,14 @@ public interface IpAddressService extends Serializable {
                 .findFirst();
     }
 
+    default Optional<Inet6Address> getFirstResolvedInet6Address(List<URI> ipv6resolvers) {
+        return ipv6resolvers.stream()
+                .map(this::getInet6Address)
+                .filter(Result::isSuccess)
+                .flatMap(Result::stream)
+                .findFirst();
+    }
+
     Result<Inet4Address> getInet4Address(URI ipv4resolver);
 
     Result<Inet6Address> getInet6Address(URI ipv4resolver);
