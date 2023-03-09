@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -137,6 +138,35 @@ class ApacheHttpClientIpAddressServiceTest {
 
         // then
         assertThat(resolvedInet4Address).isPresent().get().isInstanceOf(Inet4Address.class);
+    }
+
+    @Test
+    void resolveFirstIPv4_empty() {
+        // when
+        var address = service.getFirstResolvedInet4Address(List.of());
+
+        // then
+        assertThat(address).isEmpty();
+    }
+
+    @Test
+    @EnabledIf("supportsIpv6")
+    void resolveFirstIPv6() {
+        // when
+        Optional<Inet6Address> resolvedInet6Address =
+                service.getFirstResolvedInet6Address(singletonList(URI.create(wiremock.baseUrl())));
+
+        // then
+        assertThat(resolvedInet6Address).isPresent().get().isInstanceOf(Inet6Address.class);
+    }
+
+    @Test
+    void resolveFirstIPv6_empty() {
+        // when
+        var address = service.getFirstResolvedInet6Address(List.of());
+
+        // then
+        assertThat(address).isEmpty();
     }
 
     boolean supportsIpv4() {
