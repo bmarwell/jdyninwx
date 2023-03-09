@@ -52,6 +52,16 @@ public class InwxUpdater {
 
     private InwxSettings settings;
 
+    /**
+     * Main entrypoint.
+     * @param args the java command line args.
+     */
+    public static void main(String[] args) {
+        CommandLine commandLine = new CommandLine(new InwxUpdater());
+        int exitCode = commandLine.execute(args);
+        System.exit(exitCode);
+    }
+
     @Option(
             names = {"-s", "--settings"},
             scope = ScopeType.INHERIT)
@@ -62,16 +72,6 @@ public class InwxUpdater {
             LOG.info("Using settings file [" + settingsFile + "].");
             this.settings = new PropertyParser(settingsFile).getInwxSettings();
         }
-    }
-
-    /**
-     * Main entrypoint.
-     * @param args the java command line args.
-     */
-    public static void main(String[] args) {
-        CommandLine commandLine = new CommandLine(new InwxUpdater());
-        int exitCode = commandLine.execute(args);
-        System.exit(exitCode);
     }
 
     public InwxSettings getSettings() {
