@@ -39,9 +39,6 @@ public class Ip implements Callable<Integer> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Ip.class);
 
-    @CommandLine.ParentCommand
-    private InwxUpdater parent;
-
     @CommandLine.Option(
             names = {"-a", "--all"},
             description = "Show results from all resolvers.")
@@ -56,6 +53,9 @@ public class Ip implements Callable<Integer> {
             names = {"--no-ipv6"},
             description = "Never show IPv6 results")
     boolean noIpv6;
+
+    @CommandLine.ParentCommand
+    private InwxUpdater parent;
 
     private IpAddressService ipAddressService;
 
@@ -78,9 +78,56 @@ public class Ip implements Callable<Integer> {
         return null;
     }
 
+    private void showIpv4Results() {
+        if (showAll) {
+            showAllIpv4Results();
+            return;
+        }
+
+        showFirstIpv4Results();
+    }
+
     private void showIpv6Results() {
         if (showAll) {
             showAllIpv6Results();
+        }
+
+        showFirstIpv6Results();
+    }
+
+    private void showAllIpv4Results() {
+        for (URI uri : parent.getSettings().identPoolIpv4()) {
+            Result<Inet4Address> inet4Address = ipAddressService.getInet4Address(uri);
+            if (inet4Address.isError()) {
+                String message = String.format(
+                        Locale.ROOT,
+                        "[%-40s] => %s",
+                        uri,
+                        "fail: " + inet4Address.error().getMessage().replaceAll("\\n", " "));
+                LOG.error(message);
+            } else {
+                String message = String.format(
+                        Locale.ROOT,
+                        "[%-40s] => [%45s]",
+                        uri,
+                        inet4Address.success().getHostAddress());
+                LOG.info(message);
+            }
+        }
+    }
+
+    private void showFirstIpv4Results() {
+        Optional<Inet4Address> address = ipAddressService.getFirstResolvedInet4Address(
+                parent.getSettings().identPoolIpv4());
+
+        String message = String.format(
+                Locale.ROOT,
+                "[%-45s]",
+                address.map(Inet4Address::getHostAddress).orElse("fail"));
+        if (address.isEmpty()) {
+            LOG.error(message);
+        } else {
+            LOG.info(message);
         }
     }
 
@@ -102,48 +149,18 @@ public class Ip implements Callable<Integer> {
         }
     }
 
-    private void showIpv4Results() {
-        if (showAll) {
-            showAllIpv4Results();
-            return;
-        }
-
-        showFirstIpv4Results();
-    }
-
-    private void showFirstIpv4Results() {
-        Optional<Inet4Address> address = ipAddressService.getFirstResolvedInet4Address(
-                parent.getSettings().identPoolIpv4());
+    private void showFirstIpv6Results() {
+        Optional<Inet6Address> address = ipAddressService.getFirstResolvedInet6Address(
+                parent.getSettings().identPoolIpv6());
 
         String message = String.format(
                 Locale.ROOT,
                 "[%-45s]",
-                address.map(Inet4Address::getHostAddress).orElse("fail"));
+                address.map(Inet6Address::getHostAddress).orElse("fail"));
         if (address.isEmpty()) {
             LOG.error(message);
         } else {
             LOG.info(message);
-        }
-    }
-
-    private void showAllIpv4Results() {
-        for (URI uri : parent.getSettings().identPoolIpv4()) {
-            Result<Inet4Address> inet4Address = ipAddressService.getInet4Address(uri);
-            if (inet4Address.isError()) {
-                String message = String.format(
-                        Locale.ROOT,
-                        "[%-40s] => %s",
-                        uri,
-                        "fail: " + inet4Address.error().getMessage().replaceAll("\\n", " "));
-                LOG.error(message);
-            } else {
-                String message = String.format(
-                        Locale.ROOT,
-                        "[%-40s] => [%45s]",
-                        uri,
-                        inet4Address.success().getHostAddress());
-                LOG.info(message);
-            }
         }
     }
 }

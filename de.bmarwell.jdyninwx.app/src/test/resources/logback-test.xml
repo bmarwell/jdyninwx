@@ -11,6 +11,8 @@
     </encoder>
   </appender>
 
+  <logger name="org.eclipse.jetty.server" level="warn"/>
+
   <root level="info">
     <appender-ref ref="STDOUT"/>
   </root>

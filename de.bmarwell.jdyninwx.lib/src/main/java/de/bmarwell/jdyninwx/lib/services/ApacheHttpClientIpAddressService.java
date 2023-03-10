@@ -17,13 +17,10 @@ package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.ConnectionConfig;
@@ -42,16 +39,33 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
     @Serial
     private static final long serialVersionUID = 3653973017046313858L;
 
-    enum IpFamily {
-        IPV4,
-        IPV6
-    }
-
     /**
      * Constructs a default, immutable instance.
      */
     public ApacheHttpClientIpAddressService() {
         // cdi etc
+    }
+
+    @Override
+    public Result<Inet4Address> getInet4Address(URI ipv4resolver) {
+        return getResolverResponseForFamily(ipv4resolver, IpFamily.IPV4);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends InetAddress> Result<T> getResolverResponseForFamily(URI resolverUri, IpFamily ipFamily) {
+        try (CloseableHttpClient client = createApacheHttpClient(ipFamily)) {
+            HttpGet getIpRequest = new HttpGet(resolverUri);
+            getIpRequest.addHeader("accept", "text/plain");
+            String execute = client.execute(getIpRequest, new BasicHttpClientResponseHandler());
+
+            if (execute.isBlank()) {
+                return Result.fail(new IllegalStateException("empty result"));
+            }
+
+            return Result.ok((T) ipFamily.getByName(execute));
+        } catch (IOException | IllegalStateException e) {
+            return Result.fail(e);
+        }
     }
 
     CloseableHttpClient createApacheHttpClient(IpFamily ipFamily) {
@@ -75,36 +89,48 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
                 .build();
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends InetAddress> Result<T> getResolverResponseForFamily(URI ipv4resolver, IpFamily ipFamily) {
-        try (CloseableHttpClient client = createApacheHttpClient(ipFamily)) {
-            HttpGet getIp4 = new HttpGet(ipv4resolver);
-            String execute = client.execute(getIp4, new BasicHttpClientResponseHandler());
-
-            return Result.ok((T) Inet4Address.getByName(execute));
-        } catch (IOException | IllegalStateException e) {
-            return Result.fail(e);
-        }
-    }
-
-    @Override
-    public Result<Inet4Address> getInet4Address(URI ipv4resolver) {
-        return getResolverResponseForFamily(ipv4resolver, IpFamily.IPV4);
-    }
-
     @Override
     public Result<Inet6Address> getInet6Address(URI ipv6resolver) {
         return getResolverResponseForFamily(ipv6resolver, IpFamily.IPV6);
     }
 
+    enum IpFamily {
+        IPV4(Inet4Address.class, (String host) -> {
+            try {
+                return Inet4Address.getByName(host);
+            } catch (UnknownHostException javaNetUnknownHostException) {
+                // TODO: implement
+                throw new UnsupportedOperationException("not yet implemented: [${CLASS_NAME}::${METHOD_NAME}].");
+            }
+        }),
+        IPV6(Inet6Address.class, (String host) -> {
+            try {
+                return Inet6Address.getByName(host);
+            } catch (UnknownHostException javaNetUnknownHostException) {
+                // TODO: implement
+                throw new UnsupportedOperationException("not yet implemented: [${CLASS_NAME}::${METHOD_NAME}].");
+            }
+        });
+
+        private final Class<? extends InetAddress> implementation;
+        private final Function<String, ? extends InetAddress> resolver;
+
+        IpFamily(Class<? extends InetAddress> implementation, Function<String, ? extends InetAddress> resolver) {
+            this.implementation = implementation;
+            this.resolver = resolver;
+        }
+
+        InetAddress getByName(String host) {
+            return resolver.apply(host);
+        }
+    }
+
     static class DnsResolver extends SystemDefaultDnsResolver {
 
-        private final Class<?> inetAddressImpl;
+        private final Class<? extends InetAddress> inetAddressImpl;
 
         public DnsResolver(IpFamily ipFamily) {
-            this.inetAddressImpl = switch (ipFamily) {
-                case IPV6 -> Inet6Address.class;
-                case IPV4 -> Inet4Address.class;};
+            this.inetAddressImpl = ipFamily.implementation;
         }
 
         @Override
