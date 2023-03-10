@@ -7,4 +7,7 @@ module jdyninwx.app {
             info.picocli;
     opens de.bmarwell.jdyninwx.app.commands to
             info.picocli;
+
+    exports de.bmarwell.jdyninwx.app;
+    exports de.bmarwell.jdyninwx.app.settings;
 }

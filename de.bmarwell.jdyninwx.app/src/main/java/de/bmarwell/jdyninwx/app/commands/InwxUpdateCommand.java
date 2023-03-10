@@ -42,7 +42,7 @@ public class InwxUpdateCommand implements Callable<Integer> {
     @ParentCommand
     private InwxUpdater parent;
 
-    private IpAddressService ipAddressService;
+    private final IpAddressService ipAddressService;
 
     public InwxUpdateCommand() {
         // init

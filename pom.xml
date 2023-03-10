@@ -24,7 +24,8 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JDynINWX</name>
-  <description>A Java library and app to update your NameServer records on INWX to simulate Dynamic DNS servers.</description>
+  <description>A Java library and app to update your NameServer records on INWX to simulate Dynamic DNS servers.
+  </description>
 
   <inceptionYear>2003</inceptionYear>
 
@@ -62,6 +63,7 @@
   </properties>
 
   <modules>
+    <module>de.bmarwell.jdyninwx.wiremock.extension</module>
     <module>de.bmarwell.jdyninwx.lib</module>
     <module>de.bmarwell.jdyninwx.app</module>
   </modules>
@@ -334,7 +336,7 @@
             </palantirJavaFormat>
 
             <licenseHeader>
-              <content>
+              <content><![CDATA[
 /*
  * Copyright (C) $YEAR.
  *
@@ -350,7 +352,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-              </content>
+]]></content>
             </licenseHeader>
           </java>
         </configuration>

@@ -21,16 +21,14 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
+import de.bmarwell.jdyninwx.wiremock.extension.ResponseToRequestClientIpTransformer;
+import java.net.*;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,15 +38,13 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 class ApacheHttpClientIpAddressServiceTest {
 
-    private static boolean SUPPORTS_IPV4 = false;
-
-    private static boolean SUPPORTS_IPV6 = false;
-
     @RegisterExtension
     public static final WireMockExtension wiremock = WireMockExtension.newInstance()
-            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
+            .options(options().dynamicPort().extensions(new ResponseToRequestClientIpTransformer(false)))
             .build();
 
+    private static boolean SUPPORTS_IPV4 = false;
+    private static boolean SUPPORTS_IPV6 = false;
     private final IpAddressService service = new ApacheHttpClientIpAddressService()
             .withConnectTimeout(Duration.ofMillis(1500L))
             .withRequestTimeout(Duration.ofMillis(1500L));
@@ -56,11 +52,10 @@ class ApacheHttpClientIpAddressServiceTest {
     @BeforeAll
     static void setUpIpSupport() throws UnknownHostException {
         InetAddress localhost = InetAddress.getLocalHost();
-        InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());
-
-        if (allMyIps == null || allMyIps.length == 0) {
-            return;
-        }
+        final InetAddress[] allMyIps = Stream.concat(
+                        Arrays.stream(InetAddress.getAllByName(localhost.getCanonicalHostName())),
+                        Arrays.stream(InetAddress.getAllByName("localhost")))
+                .toArray(InetAddress[]::new);
 
         for (InetAddress allMyIp : allMyIps) {
             if (allMyIp instanceof Inet4Address) {
@@ -73,8 +68,9 @@ class ApacheHttpClientIpAddressServiceTest {
 
     @BeforeEach
     void setUpWireMock() {
-        wiremock.stubFor(get("/").willReturn(
-                        aResponse().withBody("{{request.clientIp}}").withTransformers("response-template")));
+        wiremock.stubFor(get("/").willReturn(aResponse()
+                .withBody("{{request.clientIp}}")
+                .withTransformers(ResponseToRequestClientIpTransformer.NAME)));
     }
 
     @AfterEach
