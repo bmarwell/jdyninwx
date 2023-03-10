@@ -21,6 +21,7 @@
     <distribution.name>JDynInwx</distribution.name>
     <jreleaser.stereotype>CLI</jreleaser.stereotype>
     <project.java.mainClass>de.bmarwell.jdyninwx.app.InwxUpdater</project.java.mainClass>
+    <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
 
   <dependencies>

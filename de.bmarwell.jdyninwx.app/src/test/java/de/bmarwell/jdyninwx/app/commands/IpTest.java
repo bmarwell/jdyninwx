@@ -133,7 +133,7 @@ class IpTest {
         final int result = new CommandLine(app).execute("-s", testProperties.toString(), "ip", "--no-ipv4");
 
         assertThat(result).isEqualTo(0);
-        assertThat(logWatcher.list.toString()).contains("::1");
+        assertThat(logWatcher.list.toString()).containsAnyOf("[0:0:0:0:0:0:0:1", "::1");
     }
 
     boolean supportsIpv4() {
