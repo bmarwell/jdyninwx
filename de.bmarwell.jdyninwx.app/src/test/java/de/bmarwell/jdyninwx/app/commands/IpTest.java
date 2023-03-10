@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import de.bmarwell.jdyninwx.app.InwxUpdater;
+import de.bmarwell.jdyninwx.wiremock.extension.ResponseToRequestClientIpTransformer;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -48,7 +48,7 @@ class IpTest {
 
     @RegisterExtension
     static WireMockExtension SERVER = WireMockExtension.newInstance()
-            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
+            .options(options().dynamicPort().extensions(new ResponseToRequestClientIpTransformer(false)))
             .build();
 
     @TempDir
@@ -106,7 +106,7 @@ class IpTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("content-type", "text/plain")
-                        .withTransformers(ResponseTemplateTransformer.NAME)
+                        .withTransformers(ResponseToRequestClientIpTransformer.NAME)
                         .withBody("{{request.clientIp}}")));
     }
 
