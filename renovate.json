@@ -1,5 +1,13 @@
 {
   "extends": [
     "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "^de\\.bmarwell\\.jdyninwx.*"
+      ],
+      "enabled": false
+    }
   ]
 }
