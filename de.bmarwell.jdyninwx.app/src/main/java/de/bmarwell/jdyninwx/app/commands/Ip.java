@@ -19,15 +19,16 @@ import de.bmarwell.jdyninwx.app.InwxUpdater;
 import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientIpAddressService;
 import de.bmarwell.jdyninwx.lib.services.IpAddressService;
 import de.bmarwell.jdyninwx.lib.services.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 
 /**
  * The {@code ip} command will just resolve and show IP addreses..
@@ -62,7 +63,7 @@ public class Ip implements Callable<Integer> {
     public Ip() {}
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         ipAddressService = new ApacheHttpClientIpAddressService()
                 .withConnectTimeout(parent.getSettings().identConnectTimeout())
                 .withRequestTimeout(parent.getSettings().identRequestTimeout());
@@ -75,7 +76,7 @@ public class Ip implements Callable<Integer> {
             showIpv6Results();
         }
 
-        return null;
+        return 0;
     }
 
     private void showIpv4Results() {
@@ -90,6 +91,7 @@ public class Ip implements Callable<Integer> {
     private void showIpv6Results() {
         if (showAll) {
             showAllIpv6Results();
+            return;
         }
 
         showFirstIpv6Results();
