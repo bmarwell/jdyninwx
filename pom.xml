@@ -328,6 +328,16 @@
           </formats>
 
           <java>
+            <cleanthat>
+              <version>2.11</version>
+              <mutators>
+                <mutator>*</mutator>
+              </mutators>
+              <excludedMutators>
+                <excludedMutator>AvoidFileStream</excludedMutator>
+              </excludedMutators>
+            </cleanthat>
+
             <importOrder/>
             <removeUnusedImports/>
 

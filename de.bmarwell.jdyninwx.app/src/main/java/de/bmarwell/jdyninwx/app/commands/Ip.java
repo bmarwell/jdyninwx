@@ -19,16 +19,15 @@ import de.bmarwell.jdyninwx.app.InwxUpdater;
 import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientIpAddressService;
 import de.bmarwell.jdyninwx.lib.services.IpAddressService;
 import de.bmarwell.jdyninwx.lib.services.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
-
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 
 /**
  * The {@code ip} command will just resolve and show IP addreses..
