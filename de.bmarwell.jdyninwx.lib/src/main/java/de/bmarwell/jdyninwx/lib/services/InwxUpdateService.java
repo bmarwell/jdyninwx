@@ -22,11 +22,13 @@ import java.time.Duration;
 
 public interface InwxUpdateService extends Serializable {
 
-    record InwxCredentials(String username, char[] password) {}
+    default Result<String> updateRecord(int dnsRecordId, InetAddress newIp, long ttlSeconds) {
+        return updateRecord(dnsRecordId, newIp, Math.toIntExact(ttlSeconds));
+    }
 
-    Result<?> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds);
+    Result<String> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds);
 
-    default Result<?> updateRecord(int dnsRecordId, InetAddress newIp) {
+    default Result<String> updateRecord(int dnsRecordId, InetAddress newIp) {
         return updateRecord(dnsRecordId, newIp, getDefaultTtlSeconds());
     }
 
@@ -44,4 +46,8 @@ public interface InwxUpdateService extends Serializable {
     <T extends InwxUpdateService> T withCredentials(InwxCredentials credentials);
 
     <T extends InwxUpdateService> T withApiEndpoint(URI apiEndpoint);
+
+    URI getApiEndpoint();
+
+    record InwxCredentials(String username, char[] password) {}
 }

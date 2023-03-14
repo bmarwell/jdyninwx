@@ -30,21 +30,13 @@ abstract class AbstractInwxUpdateService implements InwxUpdateService {
 
     private int defaultTtlSeconds = 300;
 
-    private Optional<InwxCredentials> credentials = Optional.empty();
+    private InwxCredentials credentials = null;
 
-    private URI apiEndpoint = URI.create("https://api.domrobot.com/xmlrpc");
+    private URI apiEndpoint = URI.create("https://api.domrobot.com/xmlrpc/");
 
     @Override
     public int getDefaultTtlSeconds() {
         return defaultTtlSeconds;
-    }
-
-    protected Optional<InwxCredentials> getCredentials() {
-        return credentials;
-    }
-
-    protected URI getApiEndpoint() {
-        return apiEndpoint;
     }
 
     @SuppressWarnings("unchecked")
@@ -59,7 +51,7 @@ abstract class AbstractInwxUpdateService implements InwxUpdateService {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends InwxUpdateService> T withCredentials(InwxCredentials credentials) {
-        this.credentials = Optional.ofNullable(credentials);
+        this.credentials = credentials;
 
         return (T) this;
     }
@@ -69,5 +61,13 @@ abstract class AbstractInwxUpdateService implements InwxUpdateService {
     public <T extends InwxUpdateService> T withApiEndpoint(URI apiEndpoint) {
         this.apiEndpoint = apiEndpoint;
         return (T) this;
+    }
+
+    public URI getApiEndpoint() {
+        return apiEndpoint;
+    }
+
+    protected Optional<InwxCredentials> getCredentials() {
+        return Optional.ofNullable(credentials);
     }
 }

@@ -15,10 +15,12 @@
  */
 package de.bmarwell.jdyninwx.app.settings;
 
+import de.bmarwell.jdyninwx.lib.services.InwxUpdateService;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 public record InwxSettings(
         String inwxUserName,
@@ -30,6 +32,31 @@ public record InwxSettings(
         List<URI> identPoolIpv6,
         Duration identConnectTimeout,
         Duration identRequestTimeout) {
+
+    public InwxUpdateService.InwxCredentials getCredentials() {
+        if (inwxUserName() == null || inwxUserName().isBlank()) {
+            throw new IllegalStateException("No username configured!");
+        }
+        if (inwxPassword() == null || inwxPassword().length == 0) {
+            throw new IllegalStateException("No password configured!");
+        }
+        return new InwxUpdateService.InwxCredentials(inwxUserName(), inwxPassword());
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", InwxSettings.class.getSimpleName() + "[", "]")
+                .add("inwxUserName='" + inwxUserName + "'")
+                .add("inwxPassword=" + "*".repeat(inwxPassword != null ? inwxPassword.length : 0))
+                .add("inwxApiEndpoint=" + inwxApiEndpoint)
+                .add("ipv4UpdateRecords=" + ipv4UpdateRecords)
+                .add("ipv6UpdateRecords=" + ipv6UpdateRecords)
+                .add("identPoolIpv4=" + identPoolIpv4)
+                .add("identPoolIpv6=" + identPoolIpv6)
+                .add("identConnectTimeout=" + identConnectTimeout)
+                .add("identRequestTimeout=" + identRequestTimeout)
+                .toString();
+    }
 
     public record RecordConfiguration(int recordId, Duration ttl) {}
 }

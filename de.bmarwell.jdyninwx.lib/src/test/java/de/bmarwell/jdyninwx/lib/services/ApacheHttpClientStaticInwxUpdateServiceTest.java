@@ -55,7 +55,9 @@ class ApacheHttpClientStaticInwxUpdateServiceTest {
                 .withCredentials(new InwxCredentials("myUserName", "myFancyPassword".toCharArray()))
                 .withApiEndpoint(URI.create(WIREMOCK.baseUrl()));
         WIREMOCK.stubFor(post("/")
-                .withHeader("content-type", equalTo("text/xml; charset=UTF-8"))
+                .withHeader(
+                        "content-type",
+                        equalTo("text/xml; charset=UTF-8").or(equalTo("application/xml; charset=UTF-8")))
                 .willReturn(ok()));
 
         // when
