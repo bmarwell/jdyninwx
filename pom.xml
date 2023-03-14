@@ -59,7 +59,7 @@
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <dependency.picocli.version>4.7.1</dependency.picocli.version>
     <dependency.picocli-codegen.version>${dependency.picocli.version}</dependency.picocli-codegen.version>
-    <dependency.jansi.version>1.18</dependency.jansi.version>
+    <dependency.jansi.version>2.4.0</dependency.jansi.version>
   </properties>
 
   <modules>
