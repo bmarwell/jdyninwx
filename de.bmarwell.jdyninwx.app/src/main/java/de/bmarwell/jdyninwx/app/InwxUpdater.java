@@ -17,8 +17,8 @@ package de.bmarwell.jdyninwx.app;
 
 import de.bmarwell.jdyninwx.app.InwxUpdater.GlobalDefaultValueProvider;
 import de.bmarwell.jdyninwx.app.commands.InwxStatusCommand;
-import de.bmarwell.jdyninwx.app.commands.InwxUpdateCommand;
 import de.bmarwell.jdyninwx.app.commands.Ip;
+import de.bmarwell.jdyninwx.app.commands.Update;
 import de.bmarwell.jdyninwx.app.settings.InwxSettings;
 import de.bmarwell.jdyninwx.app.settings.PropertyParser;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import picocli.CommandLine.Spec;
  */
 @Command(
         name = "jdynsinwx",
-        subcommands = {InwxUpdateCommand.class, InwxStatusCommand.class, Ip.class, CommandLine.HelpCommand.class},
+        subcommands = {Update.class, InwxStatusCommand.class, Ip.class, CommandLine.HelpCommand.class},
         description = "Updates inwx resource records or displays their current state.",
         defaultValueProvider = GlobalDefaultValueProvider.class)
 public class InwxUpdater {
@@ -91,9 +91,10 @@ public class InwxUpdater {
             return null;
         }
 
+        @SuppressWarnings("SwitchStatementWithTooFewBranches")
         private String defaultOptionValue(OptionSpec option) throws IOException {
-            switch (option.shortestName()) {
-                case "-s": {
+            return switch (option.shortestName()) {
+                case "-s" -> {
                     Path defaultConfigFile = getBasePathConfigHome();
                     Path configFileParent = defaultConfigFile.getParent();
                     Files.createDirectories(configFileParent);
@@ -110,11 +111,10 @@ public class InwxUpdater {
                         }
                     }
 
-                    return defaultConfigFile.toString();
+                    yield defaultConfigFile.toString();
                 }
-                default:
-                    return null;
-            }
+                default -> null;
+            };
         }
 
         private Path getBasePathConfigHome() {
