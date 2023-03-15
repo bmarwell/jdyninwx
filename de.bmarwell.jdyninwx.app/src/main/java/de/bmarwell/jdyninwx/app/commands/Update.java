@@ -123,7 +123,8 @@ public class Update implements Callable<Integer> {
             }
 
             LOG.info("Updated IPv4 record %s successfully. Response: %s."
-                    .formatted(ipv6UpdateRecord.recordId(), result.success()));
+                    .formatted(ipv6UpdateRecord.recordId(), "Command completed successfully"));
+            LOG.debug("INWX response: %s".formatted(result.success()));
         }
 
         return 0;
