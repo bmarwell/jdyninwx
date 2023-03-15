@@ -12,6 +12,8 @@
     </encoder>
   </appender>
 
+  <!-- logger name="org.apache" level="debug"/-->
+
   <root level="info">
     <appender-ref ref="STDOUT"/>
   </root>

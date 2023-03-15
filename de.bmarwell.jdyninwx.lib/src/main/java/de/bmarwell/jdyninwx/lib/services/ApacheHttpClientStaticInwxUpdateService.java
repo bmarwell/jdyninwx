@@ -18,7 +18,6 @@ package de.bmarwell.jdyninwx.lib.services;
 import java.io.IOException;
 import java.io.Serial;
 import java.net.InetAddress;
-import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -33,13 +32,6 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
 
     @Serial
     private static final long serialVersionUID = -2062602651810812231L;
-
-    /**
-     * Default constructor for immutable class; can be modified using {@code with*()}-methods.
-     */
-    public ApacheHttpClientStaticInwxUpdateService() {
-        // cdi
-    }
 
     private static final String XML_POST_TEMPALTE =
             """
@@ -91,23 +83,35 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
                   </param>
                </params>
             </methodCall>
-            """;
+            """
+                    .trim();
+
+    /**
+     * Default constructor for immutable class; can be modified using {@code with*()}-methods.
+     */
+    public ApacheHttpClientStaticInwxUpdateService() {
+        // cdi
+    }
 
     @Override
-    public Result<?> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
+    public Result<String> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
         try (CloseableHttpClient client = createApacheHttpClient()) {
             String xmlPost = createPostRequest(dnsRecordId, newIp, ttlSeconds);
-            StringEntity entity = new StringEntity(xmlPost, ContentType.TEXT_XML);
+            StringEntity entity = new StringEntity(xmlPost, ContentType.APPLICATION_XML);
             HttpPost httpPost = new HttpPost(getApiEndpoint());
             httpPost.setEntity(entity);
+            httpPost.setHeader("Content-Type", ContentType.APPLICATION_XML);
+            httpPost.setHeader("Accept", ContentType.APPLICATION_XML);
             String execute = client.execute(httpPost, new BasicHttpClientResponseHandler());
 
             return Result.ok(execute);
-        } catch (HttpResponseException e) {
-            return Result.fail(e);
         } catch (IOException e) {
             return Result.fail(e);
         }
+    }
+
+    CloseableHttpClient createApacheHttpClient() {
+        return HttpClientBuilder.create().useSystemProperties().build();
     }
 
     protected String createPostRequest(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
@@ -124,9 +128,5 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
                 .replace("%DNSID%", Integer.toString(dnsRecordId, 10))
                 .replace("%NEWIP%", newIp.getHostAddress())
                 .replace("%TTL%", Integer.toString(ttlSeconds, 10));
-    }
-
-    CloseableHttpClient createApacheHttpClient() {
-        return HttpClientBuilder.create().useSystemProperties().build();
     }
 }
