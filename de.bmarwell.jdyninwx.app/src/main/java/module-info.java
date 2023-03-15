@@ -1,6 +1,7 @@
 module jdyninwx.app {
-    requires info.picocli;
+    requires jdyninwx.xml;
     requires jdyninwx.lib;
+    requires info.picocli;
     requires org.slf4j;
 
     opens de.bmarwell.jdyninwx.app to

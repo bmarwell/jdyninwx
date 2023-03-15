@@ -22,6 +22,7 @@ import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientStaticInwxUpdateService
 import de.bmarwell.jdyninwx.lib.services.InwxUpdateService;
 import de.bmarwell.jdyninwx.lib.services.IpAddressService;
 import de.bmarwell.jdyninwx.lib.services.Result;
+import de.bmarwell.jdyninwx.xml.ResultUtility;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.URI;
@@ -111,7 +112,7 @@ public class Update implements Callable<Integer> {
 
         for (InwxSettings.RecordConfiguration ipv6UpdateRecord :
                 parent.getSettings().ipv4UpdateRecords()) {
-            final Result<?> result = inwxUpdateService.updateRecord(
+            final Result<String> result = inwxUpdateService.updateRecord(
                     ipv6UpdateRecord.recordId(),
                     publicInet4Address,
                     ipv6UpdateRecord.ttl().getSeconds());
@@ -122,9 +123,19 @@ public class Update implements Callable<Integer> {
                 return RC_UPDATE_IPV4_FAILED;
             }
 
-            LOG.info("Updated IPv4 record %s successfully. Response: %s."
-                    .formatted(ipv6UpdateRecord.recordId(), "Command completed successfully"));
-            LOG.debug("INWX response: %s".formatted(result.success()));
+            final String xmlRpcResponse = result.success();
+            final ResultUtility.XmlRpcResult xmlRpcResult = new ResultUtility().parseUpdateResponse(xmlRpcResponse);
+
+            if (xmlRpcResult.isSuccess()) {
+                LOG.info("Updated IPv4 record %s successfully. Response: %s."
+                        .formatted(ipv6UpdateRecord.recordId(), xmlRpcResult));
+                LOG.debug("INWX response: %s".formatted(xmlRpcResponse));
+            } else {
+                LOG.error(
+                        "Update IPv4 record %s not successfull. Response: %s"
+                                .formatted(ipv6UpdateRecord.recordId(), xmlRpcResponse),
+                        xmlRpcResult.error());
+            }
         }
 
         return 0;
@@ -156,9 +167,19 @@ public class Update implements Callable<Integer> {
                 return RC_UPDATE_IPV6_FAILED;
             }
 
-            LOG.info("Updated IPv6 record %s successfully. Response: %s."
-                    .formatted(ipv6UpdateRecord.recordId(), "Command completed successfully"));
-            LOG.debug("INWX response: %s".formatted(result.success()));
+            final String xmlRpcResponse = result.success();
+            final ResultUtility.XmlRpcResult xmlRpcResult = new ResultUtility().parseUpdateResponse(xmlRpcResponse);
+
+            if (xmlRpcResult.isSuccess()) {
+                LOG.info("Updated IPv6 record %s successfully. Response: %s."
+                        .formatted(ipv6UpdateRecord.recordId(), xmlRpcResult));
+                LOG.debug("INWX response: %s".formatted(xmlRpcResponse));
+            } else {
+                LOG.error(
+                        "Update IPv6 record %s not successfull. Response: %s"
+                                .formatted(ipv6UpdateRecord.recordId(), xmlRpcResponse),
+                        xmlRpcResult.error());
+            }
         }
 
         return 0;
