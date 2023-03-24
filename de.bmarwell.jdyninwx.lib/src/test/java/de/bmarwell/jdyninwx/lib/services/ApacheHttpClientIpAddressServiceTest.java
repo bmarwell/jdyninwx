@@ -21,9 +21,13 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import de.bmarwell.jdyninwx.wiremock.extension.ResponseToRequestClientIpTransformer;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +44,7 @@ class ApacheHttpClientIpAddressServiceTest {
 
     @RegisterExtension
     public static final WireMockExtension wiremock = WireMockExtension.newInstance()
-            .options(options().dynamicPort().extensions(new ResponseToRequestClientIpTransformer(false)))
+            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
             .build();
 
     private static boolean SUPPORTS_IPV4 = false;
@@ -69,8 +73,8 @@ class ApacheHttpClientIpAddressServiceTest {
     @BeforeEach
     void setUpWireMock() {
         wiremock.stubFor(get("/").willReturn(aResponse()
-                .withBody("{{request.clientIp}}")
-                .withTransformers(ResponseToRequestClientIpTransformer.NAME)));
+                .withTransformers(ResponseTemplateTransformer.NAME)
+                .withBody("{{request.clientIp}}")));
     }
 
     @AfterEach
