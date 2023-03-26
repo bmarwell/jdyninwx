@@ -26,9 +26,9 @@ import picocli.CommandLine.ParentCommand;
  * Retrieves and print the status of the specified domain resource records.
  */
 @Command(name = "status", description = "Retrieves and print the status of the specified domain resource records.")
-public class InwxStatusCommand implements Callable<Integer> {
+public class Status implements Callable<Integer> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InwxStatusCommand.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Status.class);
 
     @ParentCommand
     private InwxUpdater parent;
