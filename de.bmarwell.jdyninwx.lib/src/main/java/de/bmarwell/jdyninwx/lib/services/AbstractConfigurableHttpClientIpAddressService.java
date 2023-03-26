@@ -21,7 +21,7 @@ import java.time.Duration;
 /**
  * Default base implementation for {@code with*()}-methods.
  */
-abstract class AbstractConfigurableHttpClientIpAddressService implements IpAddressService {
+abstract class AbstractConfigurableHttpClientIpAddressService extends AbstractInwxService implements InwxQueryService {
 
     @Serial
     private static final long serialVersionUID = -3790874923289555729L;
@@ -31,14 +31,14 @@ abstract class AbstractConfigurableHttpClientIpAddressService implements IpAddre
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends IpAddressService> T withRequestTimeout(Duration timeout) {
+    public <T extends InwxQueryService> T withRequestTimeout(Duration timeout) {
         this.requestTimeout = timeout;
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends IpAddressService> T withConnectTimeout(Duration timeout) {
+    public <T extends InwxQueryService> T withConnectTimeout(Duration timeout) {
         this.connectTimeout = timeout;
         return (T) this;
     }

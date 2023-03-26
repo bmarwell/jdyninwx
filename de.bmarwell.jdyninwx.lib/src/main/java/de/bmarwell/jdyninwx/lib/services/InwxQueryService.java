@@ -15,6 +15,7 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import de.bmarwell.jdyninwx.common.value.InwxNameServerRecord;
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -26,7 +27,7 @@ import java.util.Optional;
 /**
  * Provides methods to return this device‘s current IP addresses.
  */
-public interface IpAddressService extends Serializable {
+public interface InwxQueryService extends InwxService, Serializable {
 
     default Optional<Inet4Address> getFirstResolvedInet4Address(List<URI> ipv4resolvers) {
         return ipv4resolvers.stream()
@@ -48,7 +49,9 @@ public interface IpAddressService extends Serializable {
 
     Result<Inet6Address> getInet6Address(URI ipv4resolver);
 
-    <T extends IpAddressService> T withRequestTimeout(Duration timeout);
+    <T extends InwxQueryService> T withRequestTimeout(Duration timeout);
 
-    <T extends IpAddressService> T withConnectTimeout(Duration timeout);
+    <T extends InwxQueryService> T withConnectTimeout(Duration timeout);
+
+    Result<List<InwxNameServerRecord>> listAllNameServerRecords(String domainName);
 }

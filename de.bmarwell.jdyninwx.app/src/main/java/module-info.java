@@ -3,6 +3,7 @@ module jdyninwx.app {
     requires jdyninwx.lib;
     requires info.picocli;
     requires org.slf4j;
+    requires de.bmarwell.jdyninwx.common.value;
 
     opens de.bmarwell.jdyninwx.app to
             info.picocli;

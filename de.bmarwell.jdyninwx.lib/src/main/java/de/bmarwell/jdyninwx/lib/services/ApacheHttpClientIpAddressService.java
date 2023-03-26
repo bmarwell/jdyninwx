@@ -15,26 +15,36 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import de.bmarwell.jdyninwx.common.value.InwxNameServerRecord;
+import de.bmarwell.jdyninwx.xml.ResultUtility;
 import java.io.IOException;
 import java.io.Serial;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 /**
  * Apache HttpClient-based IP Address Service.
  */
 public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpClientIpAddressService
-        implements IpAddressService {
+        implements InwxQueryService {
 
     @Serial
     private static final long serialVersionUID = 3653973017046313858L;
@@ -75,6 +85,10 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
                 .build();
     }
 
+    CloseableHttpClient createApacheHttpClient() {
+        return HttpClientBuilder.create().useSystemProperties().build();
+    }
+
     private HttpClientConnectionManager createConnectionManager(IpFamily ipFamily) {
         final DnsResolver dnsResolver = new DnsResolver(ipFamily);
         final ConnectionConfig connConfig = ConnectionConfig.custom()
@@ -92,6 +106,34 @@ public class ApacheHttpClientIpAddressService extends AbstractConfigurableHttpCl
     @Override
     public Result<Inet6Address> getInet6Address(URI ipv6resolver) {
         return getResolverResponseForFamily(ipv6resolver, IpFamily.IPV6);
+    }
+
+    @Override
+    public Result<List<InwxNameServerRecord>> listAllNameServerRecords(String domainName) {
+        try (CloseableHttpClient client = createApacheHttpClient()) {
+            String xmlPost = createListRequest(domainName);
+            StringEntity entity = new StringEntity(xmlPost, ContentType.APPLICATION_XML);
+            HttpPost httpPost = new HttpPost(getApiEndpoint());
+            httpPost.setEntity(entity);
+            httpPost.setHeader("Content-Type", ContentType.APPLICATION_XML);
+            httpPost.setHeader("Accept", ContentType.APPLICATION_XML);
+            String execute = client.execute(httpPost, new BasicHttpClientResponseHandler());
+
+            ResultUtility.XmlRpcResult<List<InwxNameServerRecord>> xmlRpcResult =
+                    new ResultUtility().parseNameServerInfoResponse(execute);
+
+            return Result.ok(xmlRpcResult.data());
+        } catch (IOException e) {
+            return Result.fail(e);
+        }
+    }
+
+    protected String createListRequest(String domainName) {
+        return Template.templateBuilder()
+                .withMethod(Template.MethodName.nameserver_info)
+                .withCredentials(getCredentials().orElseThrow())
+                .withParameter("domain", "string", domainName)
+                .build();
     }
 
     enum IpFamily {

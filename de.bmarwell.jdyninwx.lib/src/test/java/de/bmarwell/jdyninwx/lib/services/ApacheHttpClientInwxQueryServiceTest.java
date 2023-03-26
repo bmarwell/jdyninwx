@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-class ApacheHttpClientIpAddressServiceTest {
+class ApacheHttpClientInwxQueryServiceTest {
 
     @RegisterExtension
     public static final WireMockExtension wiremock = WireMockExtension.newInstance()
@@ -49,7 +49,7 @@ class ApacheHttpClientIpAddressServiceTest {
 
     private static boolean SUPPORTS_IPV4 = false;
     private static boolean SUPPORTS_IPV6 = false;
-    private final IpAddressService service = new ApacheHttpClientIpAddressService()
+    private final InwxQueryService service = new ApacheHttpClientIpAddressService()
             .withConnectTimeout(Duration.ofMillis(1500L))
             .withRequestTimeout(Duration.ofMillis(1500L));
 
