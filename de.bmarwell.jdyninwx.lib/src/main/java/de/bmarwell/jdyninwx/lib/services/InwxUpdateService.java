@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.time.Duration;
 
-public interface InwxUpdateService extends Serializable {
+public interface InwxUpdateService extends InwxService, Serializable {
 
     default Result<String> updateRecord(int dnsRecordId, InetAddress newIp, long ttlSeconds) {
         return updateRecord(dnsRecordId, newIp, Math.toIntExact(ttlSeconds));
@@ -42,10 +42,6 @@ public interface InwxUpdateService extends Serializable {
 
         return (T) this;
     }
-
-    <T extends InwxUpdateService> T withCredentials(InwxCredentials credentials);
-
-    <T extends InwxUpdateService> T withApiEndpoint(URI apiEndpoint);
 
     URI getApiEndpoint();
 

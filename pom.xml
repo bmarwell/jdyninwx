@@ -63,6 +63,7 @@
   </properties>
 
   <modules>
+    <module>common/value</module>
     <module>de.bmarwell.jdyninwx.lib</module>
     <module>de.bmarwell.jdyninwx.xml</module>
     <module>de.bmarwell.jdyninwx.app</module>

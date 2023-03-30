@@ -17,7 +17,7 @@ package de.bmarwell.jdyninwx.app.commands;
 
 import de.bmarwell.jdyninwx.app.InwxUpdater;
 import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientIpAddressService;
-import de.bmarwell.jdyninwx.lib.services.IpAddressService;
+import de.bmarwell.jdyninwx.lib.services.InwxQueryService;
 import de.bmarwell.jdyninwx.lib.services.Result;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -57,13 +57,13 @@ public class Ip implements Callable<Integer> {
     @CommandLine.ParentCommand
     private InwxUpdater parent;
 
-    private IpAddressService ipAddressService;
+    private InwxQueryService inwxQueryService;
 
     public Ip() {}
 
     @Override
     public Integer call() {
-        ipAddressService = new ApacheHttpClientIpAddressService()
+        inwxQueryService = new ApacheHttpClientIpAddressService()
                 .withConnectTimeout(parent.getSettings().identConnectTimeout())
                 .withRequestTimeout(parent.getSettings().identRequestTimeout());
 
@@ -98,7 +98,7 @@ public class Ip implements Callable<Integer> {
 
     private void showAllIpv4Results() {
         for (URI uri : parent.getSettings().identPoolIpv4()) {
-            Result<Inet4Address> inet4Address = ipAddressService.getInet4Address(uri);
+            Result<Inet4Address> inet4Address = inwxQueryService.getInet4Address(uri);
             if (inet4Address.isError()) {
                 String message = String.format(
                         Locale.ROOT,
@@ -118,7 +118,7 @@ public class Ip implements Callable<Integer> {
     }
 
     private void showFirstIpv4Results() {
-        Optional<Inet4Address> address = ipAddressService.getFirstResolvedInet4Address(
+        Optional<Inet4Address> address = inwxQueryService.getFirstResolvedInet4Address(
                 parent.getSettings().identPoolIpv4());
 
         String message = String.format(
@@ -135,7 +135,7 @@ public class Ip implements Callable<Integer> {
     private void showAllIpv6Results() {
         // length 45, because of https://stackoverflow.com/a/166157.
         for (URI uri : parent.getSettings().identPoolIpv6()) {
-            Result<Inet6Address> inet6Address = ipAddressService.getInet6Address(uri);
+            Result<Inet6Address> inet6Address = inwxQueryService.getInet6Address(uri);
             if (inet6Address.isError()) {
                 String message = String.format(Locale.ROOT, "[%-40s] => [%45s]", uri, "fail");
                 LOG.error(message);
@@ -151,7 +151,7 @@ public class Ip implements Callable<Integer> {
     }
 
     private void showFirstIpv6Results() {
-        Optional<Inet6Address> address = ipAddressService.getFirstResolvedInet6Address(
+        Optional<Inet6Address> address = inwxQueryService.getFirstResolvedInet6Address(
                 parent.getSettings().identPoolIpv6());
 
         String message = String.format(

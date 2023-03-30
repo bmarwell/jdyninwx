@@ -19,8 +19,8 @@ import de.bmarwell.jdyninwx.app.InwxUpdater;
 import de.bmarwell.jdyninwx.app.settings.InwxSettings;
 import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientIpAddressService;
 import de.bmarwell.jdyninwx.lib.services.ApacheHttpClientStaticInwxUpdateService;
+import de.bmarwell.jdyninwx.lib.services.InwxQueryService;
 import de.bmarwell.jdyninwx.lib.services.InwxUpdateService;
-import de.bmarwell.jdyninwx.lib.services.IpAddressService;
 import de.bmarwell.jdyninwx.lib.services.Result;
 import de.bmarwell.jdyninwx.xml.ResultUtility;
 import java.net.Inet4Address;
@@ -48,7 +48,7 @@ public class Update implements Callable<Integer> {
     private static final int RC_UPDATE_IPV4_FAILED = 4;
     private static final int RC_UPDATE_IPV6_FAILED = 8;
 
-    private IpAddressService ipAddressService;
+    private InwxQueryService inwxQueryService;
     private InwxUpdateService inwxUpdateService;
 
     @ParentCommand
@@ -60,7 +60,7 @@ public class Update implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        ipAddressService = new ApacheHttpClientIpAddressService();
+        inwxQueryService = new ApacheHttpClientIpAddressService();
         final InwxUpdateService.InwxCredentials inwxCredentials =
                 parent.getSettings().getCredentials();
         inwxUpdateService = new ApacheHttpClientStaticInwxUpdateService();
@@ -102,7 +102,7 @@ public class Update implements Callable<Integer> {
         if (ipv4resolvers.isEmpty()) {
             throw new IllegalStateException("Cannot update ipv4 records, no IPv4 resolvers defined!");
         }
-        Optional<Inet4Address> inet4Address = ipAddressService.getFirstResolvedInet4Address(ipv4resolvers);
+        Optional<Inet4Address> inet4Address = inwxQueryService.getFirstResolvedInet4Address(ipv4resolvers);
         if (inet4Address.isEmpty()) {
             return RC_NO_IPV4_ADDRESS;
         }
@@ -146,7 +146,7 @@ public class Update implements Callable<Integer> {
         if (ipv6resolvers.isEmpty()) {
             throw new IllegalStateException("Cannot update IPv6 records, no IPv6 resolvers defined!");
         }
-        Optional<Inet6Address> inet6Address = ipAddressService.getFirstResolvedInet6Address(ipv6resolvers);
+        Optional<Inet6Address> inet6Address = inwxQueryService.getFirstResolvedInet6Address(ipv6resolvers);
         if (inet6Address.isEmpty()) {
             return RC_NO_IPV6_ADDRESS;
         }

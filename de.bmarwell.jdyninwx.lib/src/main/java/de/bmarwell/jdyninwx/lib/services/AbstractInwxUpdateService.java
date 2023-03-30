@@ -16,23 +16,17 @@
 package de.bmarwell.jdyninwx.lib.services;
 
 import java.io.Serial;
-import java.net.URI;
 import java.time.Duration;
-import java.util.Optional;
 
 /**
  * Default implementation for {@code with*()}-methods.
  */
-abstract class AbstractInwxUpdateService implements InwxUpdateService {
+abstract class AbstractInwxUpdateService extends AbstractInwxService implements InwxUpdateService {
 
     @Serial
     private static final long serialVersionUID = -3181748065886503025L;
 
     private int defaultTtlSeconds = 300;
-
-    private InwxCredentials credentials = null;
-
-    private URI apiEndpoint = URI.create("https://api.domrobot.com/xmlrpc/");
 
     @Override
     public int getDefaultTtlSeconds() {
@@ -46,28 +40,5 @@ abstract class AbstractInwxUpdateService implements InwxUpdateService {
         this.defaultTtlSeconds = Math.toIntExact(defaultTtl.toSeconds());
 
         return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends InwxUpdateService> T withCredentials(InwxCredentials credentials) {
-        this.credentials = credentials;
-
-        return (T) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends InwxUpdateService> T withApiEndpoint(URI apiEndpoint) {
-        this.apiEndpoint = apiEndpoint;
-        return (T) this;
-    }
-
-    public URI getApiEndpoint() {
-        return apiEndpoint;
-    }
-
-    protected Optional<InwxCredentials> getCredentials() {
-        return Optional.ofNullable(credentials);
     }
 }

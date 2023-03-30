@@ -33,59 +33,6 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
     @Serial
     private static final long serialVersionUID = -2062602651810812231L;
 
-    private static final String XML_POST_TEMPALTE =
-            """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <methodCall>
-               <methodName>nameserver.updateRecord</methodName>
-               <params>
-                  <param>
-                     <value>
-                        <struct>
-                           <member>
-                              <name>user</name>
-                              <value>
-                                 <string>%USER%</string>
-                              </value>
-                           </member>
-                           <member>
-                              <name>lang</name>
-                              <value>
-                                 <string>en</string>
-                              </value>
-                           </member>
-                           <member>
-                              <name>pass</name>
-                              <value>
-                                 <string>%PASSWD%</string>
-                              </value>
-                           </member>
-                           <member>
-                              <name>id</name>
-                              <value>
-                                 <int>%DNSID%</int>
-                              </value>
-                           </member>
-                           <member>
-                              <name>content</name>
-                              <value>
-                                 <string>%NEWIP%</string>
-                              </value>
-                           </member>
-                           <member>
-                              <name>ttl</name>
-                              <value>
-                                 <int>%TTL%</int>
-                              </value>
-                           </member>
-                        </struct>
-                     </value>
-                  </param>
-               </params>
-            </methodCall>
-            """
-                    .trim();
-
     /**
      * Default constructor for immutable class; can be modified using {@code with*()}-methods.
      */
@@ -115,18 +62,12 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
     }
 
     protected String createPostRequest(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
-        return XML_POST_TEMPALTE
-                .replace(
-                        "%USER%",
-                        getCredentials().map(InwxCredentials::username).orElse(""))
-                .replace(
-                        "%PASSWD%",
-                        getCredentials()
-                                .map(InwxCredentials::password)
-                                .map(String::new)
-                                .orElse(""))
-                .replace("%DNSID%", Integer.toString(dnsRecordId, 10))
-                .replace("%NEWIP%", newIp.getHostAddress())
-                .replace("%TTL%", Integer.toString(ttlSeconds, 10));
+        return Template.templateBuilder()
+                .withCredentials(getCredentials().orElseThrow())
+                .withMethod(Template.MethodName.nameserver_updateRecord)
+                .withParameter("id", "int", dnsRecordId)
+                .withParameter("content", "string", newIp.getHostAddress())
+                .withParameter("ttl", "int", Integer.toString(ttlSeconds, 10))
+                .build();
     }
 }

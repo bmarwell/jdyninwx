@@ -15,10 +15,20 @@
  */
 package de.bmarwell.jdyninwx.xml;
 
+import static de.bmarwell.jdyninwx.xml.NodeUtility.iterable;
+
+import de.bmarwell.jdyninwx.common.value.DnsRecordType;
+import de.bmarwell.jdyninwx.common.value.InwxNameServerRecord;
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +38,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class ResultUtility {
@@ -35,8 +47,71 @@ public class ResultUtility {
     static final String XP_RETURN_CODE = "/methodResponse/params/param/value/struct/member[name='code']/value/int";
     static final String XP_MESSAGE = "/methodResponse/params/param/value/struct/member[name='msg']/value/string";
     static final String XP_RUNTIME = "/methodResponse/params/param/value/struct/member[name='runtime']/value/double";
+    static final String XP_MEMBER_RECORD = "/methodResponse/params/param/value/struct/member[name='resData']/value"
+            + "/struct/member[name='record']/value/array/data/*";
+    static final String XP_RECORD_ID = "struct/member[name='id']/value/int";
+    static final String XP_RECORD_NAME = "struct/member[name='name']/value/string";
+    static final String XP_RECORD_CONTENT = "struct/member[name='content']/value/string";
+    static final String XP_RECORD_TYPE = "struct/member[name='type']/value/string";
+    static final String XP_RECORD_TTL = "struct/member[name='ttl']/value/int";
+    static final String XP_RECORD_PRIO = "struct/member[name='prio']/value/int";
 
-    public XmlRpcResult parseUpdateResponse(String xmlResponse) {
+    public XmlRpcResult<List<InwxNameServerRecord>> parseNameServerInfoResponse(String xmlResponse) {
+        try (var is = new ByteArrayInputStream(xmlResponse.getBytes(StandardCharsets.UTF_8))) {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            Document xmlDocument = builder.parse(is);
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            var returnCode = (Number) xPath.compile(XP_RETURN_CODE).evaluate(xmlDocument, XPathConstants.NUMBER);
+            var message = (String) xPath.compile(XP_MESSAGE).evaluate(xmlDocument, XPathConstants.STRING);
+            var runtime = (Number) xPath.compile(XP_RUNTIME).evaluate(xmlDocument, XPathConstants.NUMBER);
+            var records = (NodeList) xPath.compile(XP_MEMBER_RECORD).evaluate(xmlDocument, XPathConstants.NODESET);
+
+            List<InwxNameServerRecord> resultRecords = new ArrayList<>();
+
+            for (Node node : iterable(records)) {
+                var resultRecord = parseNodeToRecord(node);
+                resultRecord.ifPresent(resultRecords::add);
+            }
+
+            return XmlRpcResult.ok(new XmlRpcResponse(returnCode, message, runtime), List.copyOf(resultRecords));
+        } catch (IOException
+                | SAXException
+                | ParserConfigurationException
+                | XPathExpressionException javaIoIOException) {
+            return XmlRpcResult.fail(javaIoIOException);
+        }
+    }
+
+    private Optional<InwxNameServerRecord> parseNodeToRecord(Node node) {
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        try {
+            int recordId = (int) (double) xPath.compile(XP_RECORD_ID).evaluate(node, XPathConstants.NUMBER);
+            if (recordId == 0) {
+                return Optional.empty();
+            }
+            String recordName = (String) xPath.compile(XP_RECORD_NAME).evaluate(node, XPathConstants.STRING);
+            String typeStr = (String) xPath.compile(XP_RECORD_TYPE).evaluate(node, XPathConstants.STRING);
+            String recordContents = (String) xPath.compile(XP_RECORD_CONTENT).evaluate(node, XPathConstants.STRING);
+            int recordTtlSeconds = (int) (double) xPath.compile(XP_RECORD_TTL).evaluate(node, XPathConstants.NUMBER);
+            int recordPrio = (int) (double) xPath.compile(XP_RECORD_PRIO).evaluate(node, XPathConstants.NUMBER);
+            DnsRecordType dnsRecordType = DnsRecordType.valueOf(typeStr.toUpperCase(Locale.ROOT));
+
+            return Optional.of(new InwxNameServerRecord(
+                    new InwxRecordId(recordId),
+                    recordName,
+                    dnsRecordType,
+                    recordContents,
+                    Duration.ofSeconds(recordTtlSeconds),
+                    recordPrio));
+        } catch (XPathExpressionException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public XmlRpcResult<?> parseUpdateResponse(String xmlResponse) {
         try (var is = new ByteArrayInputStream(xmlResponse.getBytes(StandardCharsets.UTF_8))) {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -59,9 +134,9 @@ public class ResultUtility {
 
     public record XmlRpcResponse(Number code, String message, Number runtime) {}
 
-    public record XmlRpcResult(XmlRpcResponse response, Throwable error) {
+    public record XmlRpcResult<T>(XmlRpcResponse response, T data, Throwable error) {
         private XmlRpcResult(XmlRpcResponse response) {
-            this(response, null);
+            this(response, null, null);
         }
 
         public XmlRpcResult {
@@ -74,15 +149,19 @@ public class ResultUtility {
         }
 
         private XmlRpcResult(Throwable error) {
-            this(null, error);
+            this(null, null, error);
         }
 
-        static XmlRpcResult ok(XmlRpcResponse success) {
-            return new XmlRpcResult(Objects.requireNonNull(success));
+        static XmlRpcResult<?> ok(XmlRpcResponse success) {
+            return new XmlRpcResult<>(Objects.requireNonNull(success));
         }
 
-        static XmlRpcResult fail(Throwable error) {
-            return new XmlRpcResult(Objects.requireNonNull(error));
+        static <T> XmlRpcResult<T> ok(XmlRpcResponse success, T data) {
+            return new XmlRpcResult<>(Objects.requireNonNull(success), Objects.requireNonNull(data), null);
+        }
+
+        static <T> XmlRpcResult<T> fail(Throwable error) {
+            return new XmlRpcResult<>(Objects.requireNonNull(error));
         }
 
         public boolean isSuccess() {
