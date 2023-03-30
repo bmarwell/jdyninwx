@@ -16,8 +16,8 @@
 package de.bmarwell.jdyninwx.app;
 
 import de.bmarwell.jdyninwx.app.InwxUpdater.GlobalDefaultValueProvider;
-import de.bmarwell.jdyninwx.app.commands.Status;
 import de.bmarwell.jdyninwx.app.commands.Ip;
+import de.bmarwell.jdyninwx.app.commands.Status;
 import de.bmarwell.jdyninwx.app.commands.Update;
 import de.bmarwell.jdyninwx.app.settings.InwxSettings;
 import de.bmarwell.jdyninwx.app.settings.PropertyParser;
