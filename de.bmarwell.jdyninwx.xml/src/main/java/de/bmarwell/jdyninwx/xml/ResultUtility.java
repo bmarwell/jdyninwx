@@ -111,7 +111,7 @@ public class ResultUtility {
         }
     }
 
-    public XmlRpcResult<?> parseUpdateResponse(String xmlResponse) {
+    public XmlRpcResult<Void> parseUpdateResponse(String xmlResponse) {
         try (var is = new ByteArrayInputStream(xmlResponse.getBytes(StandardCharsets.UTF_8))) {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -123,7 +123,7 @@ public class ResultUtility {
             var message = (String) xPath.compile(XP_MESSAGE).evaluate(xmlDocument, XPathConstants.STRING);
             var runtime = (Number) xPath.compile(XP_RUNTIME).evaluate(xmlDocument, XPathConstants.NUMBER);
 
-            return XmlRpcResult.ok(new XmlRpcResponse(returnCode, message, runtime));
+            return XmlRpcResult.ok(new XmlRpcResponse(returnCode, message, runtime), null);
         } catch (IOException
                 | SAXException
                 | ParserConfigurationException
@@ -157,7 +157,7 @@ public class ResultUtility {
         }
 
         static <T> XmlRpcResult<T> ok(XmlRpcResponse success, T data) {
-            return new XmlRpcResult<>(Objects.requireNonNull(success), Objects.requireNonNull(data), null);
+            return new XmlRpcResult<>(Objects.requireNonNull(success), data, null);
         }
 
         static <T> XmlRpcResult<T> fail(Throwable error) {

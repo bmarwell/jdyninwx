@@ -161,14 +161,19 @@ public class Update implements Callable<Integer> {
                     publicInet6Address,
                     ipv6UpdateRecord.ttl().getSeconds());
 
-            if (result.isError() || !result.success().contains("Command completed successfully")) {
+            if (result.isError()) {
                 LOG.error("Exception updating IPv6 record with ID %s: %s."
                         .formatted(ipv6UpdateRecord.recordId(), result.error().getMessage()));
+                return RC_UPDATE_IPV6_FAILED;
+            } else if (!result.success().contains("Command completed successfully")) {
+                LOG.error("Unknown status updating IPv6 record with ID %s: %s."
+                        .formatted(ipv6UpdateRecord.recordId(), result.success()));
                 return RC_UPDATE_IPV6_FAILED;
             }
 
             final String xmlRpcResponse = result.success();
-            final ResultUtility.XmlRpcResult xmlRpcResult = new ResultUtility().parseUpdateResponse(xmlRpcResponse);
+            final ResultUtility.XmlRpcResult<Void> xmlRpcResult =
+                    new ResultUtility().parseUpdateResponse(xmlRpcResponse);
 
             if (xmlRpcResult.isSuccess()) {
                 LOG.info("Updated IPv6 record %s successfully. Response: %s."
