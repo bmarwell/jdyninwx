@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!--
   ~ Copyright (c) 2023.
@@ -51,7 +51,7 @@
     <plugin.spotless.version>2.38.0</plugin.spotless.version>
 
     <!-- logging dependencies -->
-    <dependency.slf4j.version>2.0.7</dependency.slf4j.version>
+    <dependency.slf4j.version>2.0.9</dependency.slf4j.version>
     <dependency.logback.version>1.4.8</dependency.logback.version>
 
     <!-- test dependencies -->
