@@ -43,9 +43,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class ApacheHttpClientInwxQueryServiceTest {
 
     @RegisterExtension
-    public static final WireMockExtension wiremock = WireMockExtension.newInstance()
-            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
-            .build();
+    public static final WireMockExtension wiremock =
+            WireMockExtension.newInstance().options(options().dynamicPort()).build();
 
     private static boolean SUPPORTS_IPV4 = false;
     private static boolean SUPPORTS_IPV6 = false;

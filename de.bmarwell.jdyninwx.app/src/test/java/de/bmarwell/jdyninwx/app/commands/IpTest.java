@@ -49,9 +49,8 @@ import picocli.CommandLine;
 class IpTest {
 
     @RegisterExtension
-    static WireMockExtension SERVER = WireMockExtension.newInstance()
-            .options(options().dynamicPort().extensions(new ResponseTemplateTransformer(false)))
-            .build();
+    static WireMockExtension SERVER =
+            WireMockExtension.newInstance().options(options().dynamicPort()).build();
 
     @TempDir
     static Path tempDir;
