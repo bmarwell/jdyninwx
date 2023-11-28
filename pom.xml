@@ -52,7 +52,7 @@
 
     <!-- logging dependencies -->
     <dependency.slf4j.version>2.0.9</dependency.slf4j.version>
-    <dependency.logback.version>1.4.11</dependency.logback.version>
+    <dependency.logback.version>1.4.13</dependency.logback.version>
 
     <!-- test dependencies -->
     <dependency.junit5.version>5.10.1</dependency.junit5.version>
