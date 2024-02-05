@@ -56,7 +56,7 @@
 
     <!-- test dependencies -->
     <dependency.junit5.version>5.10.1</dependency.junit5.version>
-    <dependency.assertj.version>3.25.1</dependency.assertj.version>
+    <dependency.assertj.version>3.25.3</dependency.assertj.version>
     <dependency.picocli.version>4.7.5</dependency.picocli.version>
     <dependency.picocli-codegen.version>${dependency.picocli.version}</dependency.picocli-codegen.version>
     <dependency.jansi.version>1.18</dependency.jansi.version>
