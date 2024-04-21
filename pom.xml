@@ -55,7 +55,7 @@
     <dependency.logback.version>1.5.6</dependency.logback.version>
 
     <!-- test dependencies -->
-    <dependency.junit5.version>5.10.1</dependency.junit5.version>
+    <dependency.junit5.version>5.10.2</dependency.junit5.version>
     <dependency.assertj.version>3.25.3</dependency.assertj.version>
     <dependency.picocli.version>4.7.5</dependency.picocli.version>
     <dependency.picocli-codegen.version>${dependency.picocli.version}</dependency.picocli-codegen.version>
