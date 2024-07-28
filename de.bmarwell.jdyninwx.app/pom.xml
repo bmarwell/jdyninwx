@@ -105,7 +105,6 @@
             </goals>
             <phase>prepare-package</phase>
             <configuration>
-              <excludeScope>test</excludeScope>
               <includeScope>runtime</includeScope>
               <prependGroupId>true</prependGroupId>
               <useSubDirectoryPerScope>true</useSubDirectoryPerScope>
