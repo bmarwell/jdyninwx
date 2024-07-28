@@ -44,7 +44,8 @@ import picocli.CommandLine.Spec;
         name = "jdynsinwx",
         subcommands = {Ip.class, List.class, Update.class, Status.class, CommandLine.HelpCommand.class},
         description = "Updates inwx resource records or displays their current state.",
-        defaultValueProvider = GlobalDefaultValueProvider.class)
+        defaultValueProvider = GlobalDefaultValueProvider.class,
+        usageHelpAutoWidth = true)
 public class InwxUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger(InwxUpdater.class);
