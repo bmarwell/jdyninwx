@@ -147,9 +147,12 @@
                   <exported>true</exported>
                   <formats>
                     <format>ZIP</format>
-                    <!-- wait for https://github.com/jreleaser/jreleaser/issues/1247 -->
-                    <!--format>TAR_GZ</format-->
+                    <format>TAR_GZ</format>
                   </formats>
+                  <options>
+                    <longFileMode>POSIX</longFileMode>
+                    <bigNumberMode>POSIX</bigNumberMode>
+                  </options>
                   <mainJar>
                     <path>${project.build.directory}/${project.artifactId}-${project.version}.jar</path>
                   </mainJar>
