@@ -13,6 +13,15 @@
       "matchPackagePatterns": ["^org\\.apache\\.maven\\.plugins:.*"],
       "automerge": true,
       "automergeType": "pr"
+    },
+    {
+      "dependencyTypes": ["dependency"],
+      "versioning": "minor",
+      "automerge": true,
+      "automergeType": "pr"
+      "matchPackagePatterns": [
+        "!^org\\.apache\\.maven\\.plugins:.*" // Exclude Maven plugins (already handled above)
+      ]
     }
   ]
 }
