@@ -259,7 +259,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>3.9.0</version>
         </plugin>
 
         <!-- 3rd party plugins -->
