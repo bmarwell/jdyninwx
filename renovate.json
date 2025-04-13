@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "packageRules": [
     {
@@ -10,9 +10,11 @@
       "enabled": false
     },
     {
-      "matchPackagePatterns": ["^org\\.apache\\.maven\\.plugins:.*"],
       "automerge": true,
-      "automergeType": "pr"
+      "automergeType": "pr",
+      "matchPackageNames": [
+        "/^org\\.apache\\.maven\\.plugins:.*/"
+      ]
     },
     {
       "versioning": "minor",
