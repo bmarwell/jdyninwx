@@ -15,7 +15,6 @@
       "automergeType": "pr"
     },
     {
-      "dependencyTypes": ["dependency"],
       "versioning": "minor",
       "automerge": true,
       "automergeType": "pr"
