@@ -20,7 +20,7 @@
       "automerge": true,
       "automergeType": "pr"
       "matchPackagePatterns": [
-        "!^org\\.apache\\.maven\\.plugins:.*" // Exclude Maven plugins (already handled above)
+        "!^org\\.apache\\.maven\\.plugins:.*"
       ]
     }
   ]
