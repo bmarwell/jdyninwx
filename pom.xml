@@ -57,7 +57,7 @@
     <!-- test dependencies -->
     <dependency.junit5.version>5.13.3</dependency.junit5.version>
     <dependency.assertj.version>3.27.3</dependency.assertj.version>
-    <dependency.palantir.version>2.69.0</dependency.palantir.version>
+    <dependency.palantir.version>2.70.0</dependency.palantir.version>
     <dependency.picocli.version>4.7.7</dependency.picocli.version>
     <dependency.picocli-codegen.version>${dependency.picocli.version}</dependency.picocli-codegen.version>
     <dependency.jansi.version>2.4.2</dependency.jansi.version>
