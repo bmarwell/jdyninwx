@@ -48,7 +48,7 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
     <!-- 3rd party plugins -->
-    <plugin.spotless.version>2.44.5</plugin.spotless.version>
+    <plugin.spotless.version>2.45.0</plugin.spotless.version>
 
     <!-- logging dependencies -->
     <dependency.slf4j.version>2.0.17</dependency.slf4j.version>
