@@ -18,7 +18,7 @@ package de.bmarwell.jdyninwx.lib.services;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -32,8 +32,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class ApacheHttpClientStaticInwxUpdateServiceTest {
 
     @RegisterExtension
-    public static final WireMockExtension WIREMOCK =
-            WireMockExtension.newInstance().options(options().dynamicPort()).build();
+    public static final WireMockExtension WIREMOCK = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
     @Test
     void template_replaces_fields() throws UnknownHostException {
