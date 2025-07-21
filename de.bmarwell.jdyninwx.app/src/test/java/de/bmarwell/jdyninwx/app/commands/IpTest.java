@@ -18,7 +18,7 @@ package de.bmarwell.jdyninwx.app.commands;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matching;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.qos.logback.classic.Logger;
@@ -49,8 +49,9 @@ import picocli.CommandLine;
 class IpTest {
 
     @RegisterExtension
-    static WireMockExtension SERVER =
-            WireMockExtension.newInstance().options(options().dynamicPort()).build();
+    static WireMockExtension SERVER = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
     @TempDir
     static Path tempDir;

@@ -17,7 +17,7 @@ package de.bmarwell.jdyninwx.lib.services;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +43,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 class ApacheHttpClientInwxQueryServiceTest {
 
     @RegisterExtension
-    public static final WireMockExtension wiremock =
-            WireMockExtension.newInstance().options(options().dynamicPort()).build();
+    public static final WireMockExtension wiremock = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
     private static boolean SUPPORTS_IPV4 = false;
     private static boolean SUPPORTS_IPV6 = false;
