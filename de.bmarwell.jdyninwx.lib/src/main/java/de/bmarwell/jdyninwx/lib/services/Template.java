@@ -19,8 +19,7 @@ import java.util.Locale;
 
 public final class Template {
 
-    static final String XML_POST_TEMPALTE =
-            """
+    static final String XML_POST_TEMPALTE = """
           <?xml version="1.0" encoding="UTF-8"?>
           <methodCall>
              <methodName>%METHOD%</methodName>
@@ -52,8 +51,7 @@ public final class Template {
                 </param>
              </params>
           </methodCall>
-          """
-                    .trim();
+          """.trim();
 
     private Template() {}
 
@@ -99,20 +97,14 @@ public final class Template {
 
         public TemplateBuilder withParameter(String name, String type, Object value) {
             this.currentTemplate = this.currentTemplate.replace(
-                    "%PARAMETER%\n",
-                    String.format(
-                            Locale.ROOT,
-                            """
+                    "%PARAMETER%\n", String.format(Locale.ROOT, """
                   <member>
                      <name>%1$s</name>
                      <value>
                         <%2$s>%3$s</%2$s>
                      </value>
                   </member>
-                  %%PARAMETER%%\n""",
-                            name,
-                            type,
-                            value.toString()));
+                  %%PARAMETER%%\n""", name, type, value.toString()));
             return this;
         }
 

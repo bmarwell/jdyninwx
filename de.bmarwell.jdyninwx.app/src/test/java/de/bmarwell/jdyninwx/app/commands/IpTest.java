@@ -68,8 +68,7 @@ class IpTest {
     static void setUpConfig() throws IOException {
         testProperties = tempDir.resolve("IpTest.properties");
         Files.writeString(
-                testProperties,
-                """
+                testProperties, """
                     ## =====================
                     ## === Pool settings ===
                     ## =====================
@@ -77,10 +76,7 @@ class IpTest {
                     jdynsinwx.ident.pool.ipv4[0]=%1$s
                     ## IPv6 pools. All domains will be queried via HTTP GET.
                     jdynsinwx.ident.pool.ipv6[0]=%1$s
-                    """
-                        .formatted(SERVER.baseUrl()),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE_NEW);
+                    """.formatted(SERVER.baseUrl()), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW);
 
         InetAddress localhost = InetAddress.getLocalHost();
         final InetAddress[] allMyIps = Stream.concat(
