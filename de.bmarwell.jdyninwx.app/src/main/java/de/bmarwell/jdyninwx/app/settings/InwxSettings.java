@@ -15,6 +15,7 @@
  */
 package de.bmarwell.jdyninwx.app.settings;
 
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import de.bmarwell.jdyninwx.lib.services.InwxUpdateService;
 import java.net.URI;
 import java.time.Duration;
@@ -58,5 +59,5 @@ public record InwxSettings(
                 .toString();
     }
 
-    public record RecordConfiguration(int recordId, Duration ttl) {}
+    public record RecordConfiguration(InwxRecordId recordId, Duration ttl) {}
 }

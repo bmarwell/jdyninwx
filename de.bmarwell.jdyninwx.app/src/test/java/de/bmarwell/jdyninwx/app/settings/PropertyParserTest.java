@@ -150,4 +150,21 @@ class PropertyParserTest {
                 .matches(is -> is.identPoolIpv6().size() == 1)
                 .matches(is -> is.identPoolIpv4().size() == 1);
     }
+
+    @Test
+    void can_parse_ipv4only_config() {
+        // given
+        String validProps =
+                this.getClass().getResource("full.ipv4only.properties").getPath();
+        Path validPropsPath = Path.of(validProps);
+
+        // when
+        PropertyParser propertyParser = new PropertyParser(validPropsPath);
+        InwxSettings inwxSettings = propertyParser.getInwxSettings();
+
+        // then
+        assertThat(inwxSettings)
+                .matches(is -> is.ipv4UpdateRecords().size() == 1)
+                .matches(is -> is.ipv6UpdateRecords().isEmpty());
+    }
 }

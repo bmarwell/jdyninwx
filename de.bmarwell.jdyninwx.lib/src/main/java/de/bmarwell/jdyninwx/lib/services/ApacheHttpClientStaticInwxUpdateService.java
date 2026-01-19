@@ -15,6 +15,7 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import java.io.IOException;
 import java.io.Serial;
 import java.net.InetAddress;
@@ -41,7 +42,7 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
     }
 
     @Override
-    public Result<String> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
+    public Result<String> updateRecord(InwxRecordId dnsRecordId, InetAddress newIp, int ttlSeconds) {
         try (CloseableHttpClient client = createApacheHttpClient()) {
             String xmlPost = createPostRequest(dnsRecordId, newIp, ttlSeconds);
             StringEntity entity = new StringEntity(xmlPost, ContentType.APPLICATION_XML);
@@ -61,11 +62,11 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
         return HttpClientBuilder.create().useSystemProperties().build();
     }
 
-    protected String createPostRequest(int dnsRecordId, InetAddress newIp, int ttlSeconds) {
+    protected String createPostRequest(InwxRecordId dnsRecordId, InetAddress newIp, int ttlSeconds) {
         return Template.templateBuilder()
                 .withCredentials(getCredentials().orElseThrow())
                 .withMethod(Template.MethodName.nameserver_updateRecord)
-                .withParameter("id", "int", dnsRecordId)
+                .withParameter("id", "long", dnsRecordId.value())
                 .withParameter("content", "string", newIp.getHostAddress())
                 .withParameter("ttl", "int", Integer.toString(ttlSeconds, 10))
                 .build();

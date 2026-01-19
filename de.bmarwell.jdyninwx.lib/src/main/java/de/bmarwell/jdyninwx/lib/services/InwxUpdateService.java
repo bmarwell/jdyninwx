@@ -15,6 +15,7 @@
  */
 package de.bmarwell.jdyninwx.lib.services;
 
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URI;
@@ -22,13 +23,13 @@ import java.time.Duration;
 
 public interface InwxUpdateService extends InwxService, Serializable {
 
-    default Result<String> updateRecord(int dnsRecordId, InetAddress newIp, long ttlSeconds) {
+    default Result<String> updateRecord(InwxRecordId dnsRecordId, InetAddress newIp, long ttlSeconds) {
         return updateRecord(dnsRecordId, newIp, Math.toIntExact(ttlSeconds));
     }
 
-    Result<String> updateRecord(int dnsRecordId, InetAddress newIp, int ttlSeconds);
+    Result<String> updateRecord(InwxRecordId dnsRecordId, InetAddress newIp, int ttlSeconds);
 
-    default Result<String> updateRecord(int dnsRecordId, InetAddress newIp) {
+    default Result<String> updateRecord(InwxRecordId dnsRecordId, InetAddress newIp) {
         return updateRecord(dnsRecordId, newIp, getDefaultTtlSeconds());
     }
 

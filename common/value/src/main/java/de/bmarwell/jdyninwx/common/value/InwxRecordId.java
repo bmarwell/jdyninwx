@@ -15,4 +15,4 @@
  */
 package de.bmarwell.jdyninwx.common.value;
 
-public record InwxRecordId(int value) {}
+public record InwxRecordId(long value) {}

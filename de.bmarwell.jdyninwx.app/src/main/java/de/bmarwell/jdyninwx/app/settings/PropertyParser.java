@@ -18,6 +18,7 @@ package de.bmarwell.jdyninwx.app.settings;
 import static java.util.Collections.unmodifiableMap;
 
 import de.bmarwell.jdyninwx.app.settings.InwxSettings.RecordConfiguration;
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
@@ -53,14 +54,24 @@ public class PropertyParser {
 
     private final Map<String, Object> parsedProperties = new LinkedHashMap<>();
 
+    public PropertyParser(Path pathToSettingsFile) {
+        this(readOriginalProperties(pathToSettingsFile));
+    }
+
     public PropertyParser(Properties originalProperties) {
         this.settingsFile = null;
         this.originalProperties.putAll(originalProperties);
         initNormalizeAndSaveProperties();
     }
 
-    public PropertyParser(Path pathToSettingsFile) {
-        this(readOriginalProperties(pathToSettingsFile));
+    private static Properties readOriginalProperties(Path settingsFile) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(settingsFile, StandardCharsets.UTF_8)) {
+            Properties properties = new Properties();
+            properties.load(bufferedReader);
+            return properties;
+        } catch (IOException ioException) {
+            throw new IllegalArgumentException("Unable to read properties file: [" + settingsFile + "].", ioException);
+        }
     }
 
     /**
@@ -92,6 +103,21 @@ public class PropertyParser {
             } else {
                 addStringKey(stringKey, value);
             }
+        }
+    }
+
+    private void addListProperty(String stringKey, String stringValue) {
+        Object existingValue = parsedProperties.get(stringKey);
+
+        if (existingValue == null) {
+            LinkedList<Object> newList = new LinkedList<>();
+            parsedProperties.put(stringKey, newList);
+            newList.add(stringValue);
+        } else if (existingValue instanceof List existingList) {
+            existingList.add(stringValue);
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot add key [" + stringKey + "] because another value type already exists for this key.");
         }
     }
 
@@ -140,35 +166,6 @@ public class PropertyParser {
         }
     }
 
-    private void addListProperty(String stringKey, String stringValue) {
-        Object existingValue = parsedProperties.get(stringKey);
-
-        if (existingValue == null) {
-            LinkedList<Object> newList = new LinkedList<>();
-            parsedProperties.put(stringKey, newList);
-            newList.add(stringValue);
-        } else if (existingValue instanceof List existingList) {
-            existingList.add(stringValue);
-        } else {
-            throw new IllegalArgumentException(
-                    "Cannot add key [" + stringKey + "] because another value type already exists for this key.");
-        }
-    }
-
-    private static Properties readOriginalProperties(Path settingsFile) {
-        try (BufferedReader bufferedReader = Files.newBufferedReader(settingsFile, StandardCharsets.UTF_8)) {
-            Properties properties = new Properties();
-            properties.load(bufferedReader);
-            return properties;
-        } catch (IOException ioException) {
-            throw new IllegalArgumentException("Unable to read properties file: [" + settingsFile + "].", ioException);
-        }
-    }
-
-    protected Map<String, Object> getParsedProperties() {
-        return unmodifiableMap(parsedProperties);
-    }
-
     public InwxSettings getInwxSettings() {
         PropertyFileConstants constants = new PropertyFileConstants(this.getParsedProperties());
         return new InwxSettings(
@@ -181,6 +178,10 @@ public class PropertyParser {
                 constants.getIdentPoolIpv6(),
                 PropertyFileConstants.DEFAULT_IDENT_CONNECT_TIMEOUT,
                 constants.getIdentConnectTimeout());
+    }
+
+    protected Map<String, Object> getParsedProperties() {
+        return unmodifiableMap(parsedProperties);
     }
 
     static final class PropertyFileConstants {
@@ -225,10 +226,6 @@ public class PropertyParser {
             return getInwxRecordConfigurationList(INWX_RECORDS_IPV4);
         }
 
-        List<RecordConfiguration> getInwxIpv6RecordConfigurations() {
-            return getInwxRecordConfigurationList(INWX_RECORDS_IPV6);
-        }
-
         private List<RecordConfiguration> getInwxRecordConfigurationList(String settingConstant) {
             Object recordIds = settings.get(settingConstant);
             if (recordIds == null) {
@@ -246,11 +243,12 @@ public class PropertyParser {
 
         private RecordConfiguration mapToRecordConfiguration(Map<?, ?> map) {
             String id = (String) map.get("id");
-            int idNum;
+            long idNum;
+
             try {
-                idNum = Integer.parseInt(id);
+                idNum = Long.parseLong(id, 10);
             } catch (NumberFormatException nfe) {
-                throw new IllegalArgumentException("record IDs must be an int, but found: " + map);
+                throw new IllegalArgumentException("record IDs must be numeric, but found entry: " + map);
             }
 
             Object mapTtl = map.get("ttl");
@@ -261,15 +259,15 @@ public class PropertyParser {
             }
 
             return new RecordConfiguration(
-                    idNum, Optional.ofNullable(duration).orElseGet(() -> Duration.ofSeconds(300L)));
+                    new InwxRecordId(idNum), Optional.ofNullable(duration).orElseGet(() -> Duration.ofSeconds(300L)));
+        }
+
+        List<RecordConfiguration> getInwxIpv6RecordConfigurations() {
+            return getInwxRecordConfigurationList(INWX_RECORDS_IPV6);
         }
 
         List<URI> getIdentPoolIpv4() {
             return getUriList(IDENT_POOL_IPV4);
-        }
-
-        List<URI> getIdentPoolIpv6() {
-            return getUriList(IDENT_POOL_IPV6);
         }
 
         private List<URI> getUriList(String settingConstant) {
@@ -285,6 +283,10 @@ public class PropertyParser {
             }
 
             throw new UnsupportedOperationException("Cannot parse recordIds: " + identPoolEntries);
+        }
+
+        List<URI> getIdentPoolIpv6() {
+            return getUriList(IDENT_POOL_IPV6);
         }
 
         public Duration getIdentConnectTimeout() {

@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import de.bmarwell.jdyninwx.common.value.InwxRecordId;
 import de.bmarwell.jdyninwx.lib.services.InwxUpdateService.InwxCredentials;
 import java.net.InetAddress;
 import java.net.URI;
@@ -43,7 +44,8 @@ class ApacheHttpClientStaticInwxUpdateServiceTest {
                 .withCredentials(new InwxCredentials("myUserName", "myFancyPassword".toCharArray()));
 
         // when
-        String postRequestEntity = service.createPostRequest(42, InetAddress.getByName("8.8.8.8"), 300);
+        String postRequestEntity =
+                service.createPostRequest(new InwxRecordId(42), InetAddress.getByName("8.8.8.8"), 300);
 
         // then
         assertThat(postRequestEntity).contains(">myUserName</", ">myFancyPassword</");
@@ -62,7 +64,7 @@ class ApacheHttpClientStaticInwxUpdateServiceTest {
                 .willReturn(ok()));
 
         // when
-        Result<?> updateRecordResult = service.updateRecord(42, InetAddress.getByName("8.8.8.8"));
+        Result<?> updateRecordResult = service.updateRecord(new InwxRecordId(42), InetAddress.getByName("8.8.8.8"));
 
         // then
         assertThat(updateRecordResult).matches(Result::isSuccess);
