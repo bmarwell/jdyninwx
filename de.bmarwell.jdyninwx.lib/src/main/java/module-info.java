@@ -4,5 +4,8 @@ module jdyninwx.lib {
     requires jdyninwx.xml;
     requires de.bmarwell.jdyninwx.common.value;
 
+    // for apache
+    requires jdk.net;
+
     exports de.bmarwell.jdyninwx.lib.services;
 }
