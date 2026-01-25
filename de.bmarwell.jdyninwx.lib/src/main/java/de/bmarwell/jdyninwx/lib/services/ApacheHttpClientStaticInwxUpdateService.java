@@ -66,7 +66,7 @@ public class ApacheHttpClientStaticInwxUpdateService extends AbstractInwxUpdateS
         return Template.templateBuilder()
                 .withCredentials(getCredentials().orElseThrow())
                 .withMethod(Template.MethodName.nameserver_updateRecord)
-                .withParameter("id", "long", dnsRecordId.value())
+                .withParameter("id", "string", dnsRecordId.value())
                 .withParameter("content", "string", newIp.getHostAddress())
                 .withParameter("ttl", "int", Integer.toString(ttlSeconds, 10))
                 .build();
