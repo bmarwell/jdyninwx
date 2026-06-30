@@ -55,7 +55,7 @@
     <dependency.logback.version>1.5.37</dependency.logback.version>
 
     <!-- test dependencies -->
-    <dependency.junit5.version>6.1.0</dependency.junit5.version>
+    <dependency.junit5.version>6.1.1</dependency.junit5.version>
     <dependency.assertj.version>3.27.7</dependency.assertj.version>
     <dependency.palantir.version>2.94.0</dependency.palantir.version>
     <dependency.picocli.version>4.7.7</dependency.picocli.version>
