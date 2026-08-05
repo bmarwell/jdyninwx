@@ -154,7 +154,7 @@ class ApacheHttpClientInwxQueryServiceTest {
     void resolveFirstIPv6() {
         // given
         final List<URI> baseUrls =
-                List.of(URI.create(wiremock.baseUrl()), URI.create("http://localhost:" + wiremock.getHttpsPort()));
+                List.of(URI.create(wiremock.baseUrl()), URI.create("http://localhost:" + wiremock.getPort()));
 
         // when
         Optional<Inet6Address> resolvedInet6Address = service.getFirstResolvedInet6Address(baseUrls);
