@@ -152,9 +152,12 @@ class ApacheHttpClientInwxQueryServiceTest {
     @Test
     @EnabledIf("supportsIpv6")
     void resolveFirstIPv6() {
+        // given
+        final List<URI> baseUrls =
+                List.of(URI.create(wiremock.baseUrl()), URI.create("http://localhost:" + wiremock.getHttpsPort()));
+
         // when
-        Optional<Inet6Address> resolvedInet6Address =
-                service.getFirstResolvedInet6Address(singletonList(URI.create(wiremock.baseUrl())));
+        Optional<Inet6Address> resolvedInet6Address = service.getFirstResolvedInet6Address(baseUrls);
 
         // then
         assertThat(resolvedInet6Address).isPresent().get().isInstanceOf(Inet6Address.class);
